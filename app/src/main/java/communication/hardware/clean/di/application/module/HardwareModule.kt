@@ -6,10 +6,8 @@ import dagger.Provides
 import javax.inject.Singleton
 
 @Module
-class HardwareModule() {
+class HardwareModule {
 
-    @Provides
-    @Singleton
-    fun provideSms(): ISms =
+
 
 }

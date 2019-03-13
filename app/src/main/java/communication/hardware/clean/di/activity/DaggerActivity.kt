@@ -1,8 +1,9 @@
 package communication.hardware.clean.di.activity
 
 import android.os.Bundle
-import android.support.v7.app.AppCompatActivity
+import androidx.appcompat.app.AppCompatActivity
 import communication.hardware.clean.AppApplication
+import communication.hardware.clean.di.createActivityComponent
 
 abstract class DaggerActivity : AppCompatActivity() {
 

@@ -31,4 +31,11 @@ class UseCaseModule {
     @Singleton
     fun provideTakePictureUseCase(camera: ICamera): TakePictureUseCase = TakePictureUseCase(camera)
 
+    interface Exposes {
+        fun GetLocationsUseCase(): GetLocationsUseCase
+        fun GetLocationUseCase(): GetLocationUseCase
+        fun GetSmsUseCase(): GetSmsUseCase
+        fun SendSmsUseCase(): SendSmsUseCase
+        fun TakePictureUseCase(): TakePictureUseCase
+    }
 }

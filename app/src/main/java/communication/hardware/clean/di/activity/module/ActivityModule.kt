@@ -1,9 +1,9 @@
 package communication.hardware.clean.di.activity.module
 
 import android.app.Activity
-import android.arch.lifecycle.Lifecycle
+import androidx.lifecycle.Lifecycle
 import android.content.Context
-import android.support.v4.app.FragmentManager
+import androidx.fragment.app.FragmentManager
 import communication.hardware.clean.di.activity.ActivityScope
 import communication.hardware.clean.di.activity.DaggerActivity
 import communication.hardware.clean.di.activity.ForActivity
@@ -32,9 +32,7 @@ class ActivityModule(private val daggerActivity: DaggerActivity) {
     fun provideFragmentManager(): FragmentManager = daggerActivity.supportFragmentManager
 
     interface Exposes {
-        @ForActivity
         fun context(): Context
-
         fun activity(): Activity
     }
 }
