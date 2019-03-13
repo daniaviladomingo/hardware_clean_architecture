@@ -2,6 +2,7 @@ package communication.hardware.clean.di.activity
 
 import android.os.Bundle
 import android.support.v7.app.AppCompatActivity
+import communication.hardware.clean.AppApplication
 
 abstract class DaggerActivity : AppCompatActivity() {
 

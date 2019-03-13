@@ -1,8 +1,11 @@
 package communication.hardware.clean.device
 
+import android.Manifest
 import android.annotation.SuppressLint
+import android.arch.lifecycle.Lifecycle
+import android.arch.lifecycle.LifecycleObserver
+import android.arch.lifecycle.OnLifecycleEvent
 import android.content.Context
-import android.util.Log
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -12,28 +15,75 @@ import communication.hardware.clean.domain.location.model.Location
 import io.reactivex.Observable
 import io.reactivex.Single
 
-class LocationImp(private val context: Context): ILocation {
-    @SuppressLint("MissingPermission")
-    override fun getLocation(): Single<Location> = Single.create {
-        val locationRequest = LocationRequest()
-        locationRequest.interval = 1000
-        locationRequest.fastestInterval = 1000
-        locationRequest.priority = LocationRequest.PRIORITY_HIGH_ACCURACY
+class LocationImp(
+    private val context: Context,
+    lifecycle: Lifecycle,
+    private val interval: Long,
+    private val fastestInterval: Long,
+    private val priority: Int,
+    private val minAccuracy: Int
+) : ILocation, LifecycleObserver {
 
-        val locationCallback = object : LocationCallback() {
-            override fun onLocationResult(locationResult: LocationResult) {
-                Log.d("location", "(${locationResult.lastLocation.latitude},${locationResult.lastLocation.longitude}) -> ${locationResult.lastLocation.accuracy}")
-                if (locationResult.lastLocation.accuracy < 100) {
-                    FusedLocationProviderClient(context).removeLocationUpdates(this)
-                    it.onSuccess(Location(locationResult.lastLocation.latitude, locationResult.lastLocation.longitude, locationResult.lastLocation.accuracy))
-                }
+    init {
+        lifecycle.addObserver(this)
+    }
+
+    private var rxPipe: (Location) -> Unit = {}
+
+    private val locationRequest = LocationRequest().apply {
+        interval = this@LocationImp.interval //1000
+        fastestInterval = this@LocationImp.fastestInterval //1000
+        priority = this@LocationImp.priority //LocationRequest.PRIORITY_HIGH_ACCURACY
+    }
+
+    private val locationCallback = object : LocationCallback() {
+        override fun onLocationResult(locationResult: LocationResult) {
+            if (locationResult.lastLocation.accuracy < minAccuracy) {
+                rxPipe.invoke(
+                    Location(
+                        locationResult.lastLocation.latitude,
+                        locationResult.lastLocation.longitude,
+                        locationResult.lastLocation.accuracy
+                    )
+                )
             }
         }
+    }
 
+    @SuppressLint("MissingPermission")
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun start() {
         FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
-    override fun getLocations(): Observable<Location> {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun stop() {
+        FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
     }
+
+    @SuppressLint("MissingPermission")
+    override fun getLocation(): Single<Location> = Single.create { emitter ->
+//        if (context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+//            FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
+            rxPipe = { location ->
+                FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
+                emitter.onSuccess(location)
+            }
+//        } else {
+//            emitter.onError(Throwable("ACCESS_FINE_LOCATION permission do not granted"))
+//        }
+    }
+
+    @SuppressLint("MissingPermission")
+    override fun getLocations(): Observable<Location> = Observable.create { emitter ->
+//        if (context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+//            FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
+            rxPipe = { location ->
+                emitter.onNext(location)
+            }
+//        } else {
+//            emitter.onError(Throwable("ACCESS_FINE_LOCATION permission do not granted"))
+//        }
+    }
+
 }
