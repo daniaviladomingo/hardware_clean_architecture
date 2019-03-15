@@ -32,10 +32,10 @@ class UseCaseModule {
     fun provideTakePictureUseCase(camera: ICamera): TakePictureUseCase = TakePictureUseCase(camera)
 
     interface Exposes {
-        fun GetLocationsUseCase(): GetLocationsUseCase
-        fun GetLocationUseCase(): GetLocationUseCase
-        fun GetSmsUseCase(): GetSmsUseCase
-        fun SendSmsUseCase(): SendSmsUseCase
-        fun TakePictureUseCase(): TakePictureUseCase
+        fun getLocationsUseCase(): GetLocationsUseCase
+        fun getLocationUseCase(): GetLocationUseCase
+        fun getSmsUseCase(): GetSmsUseCase
+        fun gendSmsUseCase(): SendSmsUseCase
+        fun takePictureUseCase(): TakePictureUseCase
     }
 }

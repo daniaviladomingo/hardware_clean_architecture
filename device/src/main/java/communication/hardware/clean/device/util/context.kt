@@ -1,4 +1,4 @@
-package communication.hardware.clean.device
+package communication.hardware.clean.device.util
 
 import android.content.Context
 import android.content.pm.PackageManager

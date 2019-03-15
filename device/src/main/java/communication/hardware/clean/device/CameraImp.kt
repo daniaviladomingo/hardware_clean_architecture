@@ -11,6 +11,7 @@ import communication.hardware.clean.domain.camera.model.Picture
 import io.reactivex.Completable
 import io.reactivex.Single
 
+@Suppress("DEPRECATION")
 class CameraImp(
     private val cameraId: Int,
     private val windowManager: WindowManager,

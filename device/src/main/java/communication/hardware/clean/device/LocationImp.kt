@@ -31,9 +31,9 @@ class LocationImp(
     private var rxPipe: (Location) -> Unit = {}
 
     private val locationRequest = LocationRequest().apply {
-        interval = this@LocationImp.interval //1000
-        fastestInterval = this@LocationImp.fastestInterval //1000
-        priority = this@LocationImp.priority //LocationRequest.PRIORITY_HIGH_ACCURACY
+        interval = this@LocationImp.interval // 1000
+        fastestInterval = this@LocationImp.fastestInterval // 1000
+        priority = this@LocationImp.priority // LocationRequest.PRIORITY_HIGH_ACCURACY
     }
 
     private val locationCallback = object : LocationCallback() {

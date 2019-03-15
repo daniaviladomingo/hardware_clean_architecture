@@ -20,12 +20,12 @@ class ActivityModule(private val daggerActivity: DaggerActivity) {
 
     @Provides
     @ActivityScope
-    @ForActivity
-    fun provideLifecycle(): Lifecycle = daggerActivity.lifecycle
+    fun provideActivity(): Activity = daggerActivity
 
     @Provides
     @ActivityScope
-    fun provideActivity(): Activity = daggerActivity
+    @ForActivity
+    fun provideLifecycle(): Lifecycle = daggerActivity.lifecycle
 
     @Provides
     @ActivityScope
@@ -34,5 +34,6 @@ class ActivityModule(private val daggerActivity: DaggerActivity) {
     interface Exposes {
         fun context(): Context
         fun activity(): Activity
+        fun lifecycle(): Lifecycle
     }
 }
