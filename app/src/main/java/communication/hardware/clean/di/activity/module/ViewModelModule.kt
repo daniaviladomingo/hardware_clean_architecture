@@ -19,10 +19,10 @@ class ViewModelModule {
     @ViewModelKey(MainActivityViewModel::class)
     fun provideCameraViewModel(
         getLocationUseCase: GetLocationUseCase,
-        getLocationsUseCase: GetLocationsUseCase,
-        getSmsUseCase: GetSmsUseCase,
-        sendSmsUseCase: SendSmsUseCase,
-        takePictureUseCase: TakePictureUseCase
+        getLocationsUseCase: GetLocationsUseCase
+//        getSmsUseCase: GetSmsUseCase,
+//        sendSmsUseCase: SendSmsUseCase,
+//        takePictureUseCase: TakePictureUseCase
     ): ViewModel = MainActivityViewModel(
         getLocationUseCase,
         getLocationsUseCase

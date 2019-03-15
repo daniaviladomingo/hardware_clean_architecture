@@ -1,5 +1,6 @@
-package communication.hardware.clean.di.application.module
+package communication.hardware.clean.di.activity.module
 
+import communication.hardware.clean.di.activity.ActivityScope
 import communication.hardware.clean.domain.camera.ICamera
 import communication.hardware.clean.domain.interactor.*
 import communication.hardware.clean.domain.location.ILocation
@@ -11,13 +12,13 @@ import javax.inject.Singleton
 @Module
 class UseCaseModule {
 
-//    @Provides
-//    @Singleton
-//    fun provideGetLocationsUseCase(location: ILocation): GetLocationsUseCase = GetLocationsUseCase(location)
-//
-//    @Provides
-//    @Singleton
-//    fun provideGetLocationUseCase(location: ILocation): GetLocationUseCase = GetLocationUseCase(location)
+    @Provides
+    @ActivityScope
+    fun provideGetLocationsUseCase(location: ILocation): GetLocationsUseCase = GetLocationsUseCase(location)
+
+    @Provides
+    @ActivityScope
+    fun provideGetLocationUseCase(location: ILocation): GetLocationUseCase = GetLocationUseCase(location)
 
 //    @Provides
 //    @Singleton
@@ -32,8 +33,8 @@ class UseCaseModule {
 //    fun provideTakePictureUseCase(camera: ICamera): TakePictureUseCase = TakePictureUseCase(camera)
 
     interface Exposes {
-//        fun getLocationsUseCase(): GetLocationsUseCase
-//        fun getLocationUseCase(): GetLocationUseCase
+        fun getLocationsUseCase(): GetLocationsUseCase
+        fun getLocationUseCase(): GetLocationUseCase
 //        fun getSmsUseCase(): GetSmsUseCase
 //        fun gendSmsUseCase(): SendSmsUseCase
 //        fun takePictureUseCase(): TakePictureUseCase

@@ -1,9 +1,7 @@
 package communication.hardware.clean.di.activity
 
+import communication.hardware.clean.di.activity.module.*
 import communication.hardware.clean.ui.MainActivity
-import communication.hardware.clean.di.activity.module.ActivityModule
-import communication.hardware.clean.di.activity.module.ViewModelFactoryModule
-import communication.hardware.clean.di.activity.module.ViewModelModule
 import communication.hardware.clean.di.application.ApplicationComponent
 import dagger.Component
 
@@ -12,6 +10,8 @@ import dagger.Component
     dependencies = [ApplicationComponent::class],
     modules = [
         ActivityModule::class,
+        LocationModule::class,
+        UseCaseModule::class,
         ViewModelFactoryModule::class,
         ViewModelModule::class
     ]

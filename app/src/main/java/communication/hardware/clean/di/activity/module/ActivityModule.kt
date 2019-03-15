@@ -32,8 +32,10 @@ class ActivityModule(private val daggerActivity: DaggerActivity) {
     fun provideFragmentManager(): FragmentManager = daggerActivity.supportFragmentManager
 
     interface Exposes {
+        @ForActivity
         fun context(): Context
         fun activity(): Activity
+        @ForActivity
         fun lifecycle(): Lifecycle
     }
 }
