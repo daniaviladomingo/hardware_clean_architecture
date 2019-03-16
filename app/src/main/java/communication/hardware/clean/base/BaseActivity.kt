@@ -1,19 +1,24 @@
 package communication.hardware.clean.base
 
 import android.os.Bundle
-import androidx.appcompat.app.AppCompatActivity
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
+import androidx.lifecycle.ViewModelProvider
 import communication.hardware.clean.R
+import communication.hardware.clean.di.activity.DaggerActivity
 import communication.hardware.clean.ui.data.ResourceState
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.view_error.*
+import javax.inject.Inject
 
-abstract class BaseActivity : AppCompatActivity() {
+abstract class BaseActivity : DaggerActivity() {
+
+    @Inject
+    protected lateinit var viewModelFactory: ViewModelProvider.Factory
 
     private lateinit var activityView: View
 
