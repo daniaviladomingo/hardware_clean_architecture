@@ -7,7 +7,7 @@ import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
 import communication.hardware.clean.di.activity.ActivityComponent
 import communication.hardware.clean.ui.data.ResourceState
-import communication.hardware.clean.util.log
+import kotlinx.android.synthetic.main.activity_main.*
 
 class MainActivity : BaseActivity() {
 
@@ -20,7 +20,20 @@ class MainActivity : BaseActivity() {
 
         setListener()
 
-        mainActivityViewModel.getLocations()
+//        mainActivityViewModel.getLocation()
+//        mainActivityViewModel.getLocations()
+
+        button_get_one_location.setOnClickListener {
+            mainActivityViewModel.getLocation()
+        }
+
+        button_get_locations.setOnClickListener {
+            mainActivityViewModel.getLocations()
+        }
+
+        button_stop_locations.setOnClickListener {
+            mainActivityViewModel.stopLocations()
+        }
     }
 
     private fun setListener() {
@@ -29,7 +42,7 @@ class MainActivity : BaseActivity() {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
-                        this.log("ccc")
+                        location_result.text = "$this"
                     }
                 }
             }

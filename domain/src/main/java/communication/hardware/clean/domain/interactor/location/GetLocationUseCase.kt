@@ -1,4 +1,4 @@
-package communication.hardware.clean.domain.interactor
+package communication.hardware.clean.domain.interactor.location
 
 import communication.hardware.clean.domain.interactor.type.SingleUseCase
 import communication.hardware.clean.domain.location.ILocation

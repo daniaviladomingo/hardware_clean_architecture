@@ -2,10 +2,10 @@ package communication.hardware.clean.device
 
 import android.Manifest
 import android.annotation.SuppressLint
+import android.content.Context
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
-import android.content.Context
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -13,6 +13,7 @@ import com.google.android.gms.location.LocationResult
 import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.domain.location.ILocation
 import communication.hardware.clean.domain.location.model.Location
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.Single
 
@@ -63,6 +64,7 @@ class LocationImp(
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    @Synchronized
     fun stop() {
         FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
     }
@@ -83,5 +85,9 @@ class LocationImp(
         rxPipe = { location ->
             emitter.onNext(location)
         }
+    }
+
+    override fun stopLocations(): Completable = Completable.create {
+        stop()
     }
 }
