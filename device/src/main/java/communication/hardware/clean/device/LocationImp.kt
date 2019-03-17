@@ -26,7 +26,8 @@ class LocationImp(
     private val minAccuracy: Int
 ) : ILocation, LifecycleObserver {
 
-    private var getLocations = false
+    private var getOnlyOneLocation = false
+    private var locating = false
 
     init {
         lifecycle.addObserver(this)
@@ -56,24 +57,33 @@ class LocationImp(
 
     @SuppressLint("MissingPermission")
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    @Synchronized
     fun start() {
-        if (!context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-            throw IllegalAccessError("${Manifest.permission.ACCESS_FINE_LOCATION} do not granted")
+        if (!locating) {
+            if (!context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+                throw IllegalAccessError("${Manifest.permission.ACCESS_FINE_LOCATION} do not granted")
+            }
+            FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
+            locating = true
         }
-        FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     @Synchronized
     fun stop() {
-        FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
+        if (!locating) {
+            FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
+            locating = false
+        }
     }
 
     @SuppressLint("MissingPermission")
     override fun getLocation(): Single<Location> = Single.create { emitter ->
+        getOnlyOneLocation = true
+        start()
         rxPipe = { location ->
-            if (!getLocations) {
-                FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
+            if (getOnlyOneLocation) {
+                stop()
             }
             emitter.onSuccess(location)
         }
@@ -81,7 +91,7 @@ class LocationImp(
 
     @SuppressLint("MissingPermission")
     override fun getLocations(): Observable<Location> = Observable.create { emitter ->
-        getLocations = true
+        start()
         rxPipe = { location ->
             emitter.onNext(location)
         }
