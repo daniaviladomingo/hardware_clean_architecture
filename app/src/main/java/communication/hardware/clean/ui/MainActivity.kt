@@ -7,6 +7,7 @@ import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
 import communication.hardware.clean.di.activity.ActivityComponent
 import communication.hardware.clean.ui.data.ResourceState
+import communication.hardware.clean.util.log
 
 class MainActivity : BaseActivity() {
 
@@ -18,6 +19,8 @@ class MainActivity : BaseActivity() {
         mainActivityViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
         setListener()
+
+        mainActivityViewModel.getLocations()
     }
 
     private fun setListener() {
@@ -26,7 +29,7 @@ class MainActivity : BaseActivity() {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
-
+                        this.log("ccc")
                     }
                 }
             }
