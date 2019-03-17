@@ -10,6 +10,7 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.domain.location.ILocation
 import communication.hardware.clean.domain.location.model.Location
 import io.reactivex.Observable
@@ -24,6 +25,8 @@ class LocationImp(
     private val minAccuracy: Int
 ) : ILocation, LifecycleObserver {
 
+    private var getLocations = false
+
     init {
         lifecycle.addObserver(this)
     }
@@ -31,9 +34,9 @@ class LocationImp(
     private var rxPipe: (Location) -> Unit = {}
 
     private val locationRequest = LocationRequest().apply {
-        interval = this@LocationImp.interval // 1000
-        fastestInterval = this@LocationImp.fastestInterval // 1000
-        priority = this@LocationImp.priority // LocationRequest.PRIORITY_HIGH_ACCURACY
+        interval = this@LocationImp.interval
+        fastestInterval = this@LocationImp.fastestInterval
+        priority = this@LocationImp.priority
     }
 
     private val locationCallback = object : LocationCallback() {
@@ -53,6 +56,9 @@ class LocationImp(
     @SuppressLint("MissingPermission")
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     fun start() {
+        if (!context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
+            throw IllegalAccessError("${Manifest.permission.ACCESS_FINE_LOCATION} do not granted")
+        }
         FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
     }
 
@@ -63,27 +69,19 @@ class LocationImp(
 
     @SuppressLint("MissingPermission")
     override fun getLocation(): Single<Location> = Single.create { emitter ->
-//        if (context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-//            FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
-            rxPipe = { location ->
+        rxPipe = { location ->
+            if (!getLocations) {
                 FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
-                emitter.onSuccess(location)
             }
-//        } else {
-//            emitter.onError(Throwable("ACCESS_FINE_LOCATION permission do not granted"))
-//        }
+            emitter.onSuccess(location)
+        }
     }
 
     @SuppressLint("MissingPermission")
     override fun getLocations(): Observable<Location> = Observable.create { emitter ->
-//        if (context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-//            FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
-            rxPipe = { location ->
-                emitter.onNext(location)
-            }
-//        } else {
-//            emitter.onError(Throwable("ACCESS_FINE_LOCATION permission do not granted"))
-//        }
+        getLocations = true
+        rxPipe = { location ->
+            emitter.onNext(location)
+        }
     }
-
 }
