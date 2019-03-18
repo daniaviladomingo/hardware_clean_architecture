@@ -12,6 +12,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
 
+        <!-- LOCATION MODULE -->
+
         <TextView
                 android:layout_marginTop="20dp"
                 style="@style/TitleModule"
@@ -51,6 +53,58 @@
         <Button
                 android:id="@+id/button_stop_locations"
                 android:text="Stop Locations"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <!-- SMS MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test Sms Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <EditText
+                    android:id="@+id/destinationAddress"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:hint="Phone"
+                    android:inputType="phone"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+            <EditText
+                    android:imeOptions="actionDone"
+                    android:singleLine="true"
+                    android:id="@+id/message"
+                    android:hint="Message"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="4"/>
+
+        </LinearLayout>
+
+        <Button
+                android:id="@+id/button_send_sms"
+                android:text="SEND SMS"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:id="@+id/sms_read"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <Button
+                android:id="@+id/button_read_sms"
+                android:text="READ INCOMING SMS"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 

@@ -1,19 +1,24 @@
 package communication.hardware.clean.device
 
+import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
 import android.hardware.SensorManager
-import communication.hardware.clean.domain.sensor.ISensorHardware
-import io.reactivex.Completable
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleObserver
+import androidx.lifecycle.OnLifecycleEvent
+import communication.hardware.clean.domain.sensor.ISensor
 import io.reactivex.Observable
 
-class SensorHardwareImp(
-        private val sensorManager: SensorManager,
-        private val samplingPeriodUs: Int,
-        private val shakeThreshold: Int
-) : ISensorHardware {
+class SensorImp(
+    context: Context,
+    lifecycle: Lifecycle,
+    private val samplingPeriodUs: Int,
+    private val shakeThreshold: Int
+) : ISensor, LifecycleObserver {
 
+    private val sensorManager: SensorManager = context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val sensorAccelerometer: Sensor = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
     private var lastUpdate: Long = 0
@@ -21,27 +26,26 @@ class SensorHardwareImp(
     private var lastY: Float = 0f
     private var lastZ: Float = 0f
 
-    private var rxBus: () -> Unit = {}
+    private var rxPipe: () -> Unit = {}
 
-    // TODO: asociate with activity/fragment cyclelife
-//    @OnLifecycleEvent(Lifecycle.Event.ON_RESUME)
-//    private fun onResume() {
-//        sensorManager.registerListener(accelerometerSensorListener, sensorAccelerometer, samplingPeriodUs)
-//    }
-//
-//    @OnLifecycleEvent(Lifecycle.Event.ON_PAUSE)
-//    private fun onPause() {
-//        sensorManager.unregisterListener(accelerometerSensorListener)
-//    }
-
-    override fun enableListener(): Completable = Completable.create {
-        sensorManager.registerListener(accelerometerSensorListener, sensorAccelerometer, samplingPeriodUs)
-        it.onComplete()
+    init {
+        lifecycle.addObserver(this)
     }
 
-    override fun disableListener(): Completable = Completable.create {
+    override fun shaked(): Observable<Unit> = Observable.create {
+        rxPipe = {
+            it.onNext(Unit)
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_START)
+    fun start() {
+        sensorManager.registerListener(accelerometerSensorListener, sensorAccelerometer, samplingPeriodUs)
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    fun stop() {
         sensorManager.unregisterListener(accelerometerSensorListener)
-        it.onComplete()
     }
 
     private val accelerometerSensorListener = object : SensorEventListener {
@@ -61,19 +65,13 @@ class SensorHardwareImp(
                 val speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000
 
                 if (speed > shakeThreshold) {
-                    rxBus.invoke()
+                    rxPipe.invoke()
                 }
 
                 lastX = x
                 lastY = y
                 lastZ = z
             }
-        }
-    }
-
-    override fun shaked(): Observable<Unit> = Observable.create {
-        rxBus = {
-            it.onNext(Unit)
         }
     }
 }

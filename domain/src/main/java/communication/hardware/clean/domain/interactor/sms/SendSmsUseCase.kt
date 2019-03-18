@@ -1,4 +1,4 @@
-package communication.hardware.clean.domain.interactor
+package communication.hardware.clean.domain.interactor.sms
 
 import communication.hardware.clean.domain.interactor.type.CompletableUseCaseWithParameter
 import communication.hardware.clean.domain.sms.ISms

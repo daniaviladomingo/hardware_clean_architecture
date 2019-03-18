@@ -4,14 +4,12 @@ import android.content.Context
 import androidx.lifecycle.Lifecycle
 import com.google.android.gms.location.LocationRequest
 import communication.hardware.clean.device.LocationImp
-import communication.hardware.clean.di.activity.ActivityScope
-import communication.hardware.clean.di.activity.ForActivity
+import communication.hardware.clean.di.activity.*
 import communication.hardware.clean.di.application.*
 import communication.hardware.clean.domain.location.ILocation
 import dagger.Module
 import dagger.Provides
 import java.util.concurrent.TimeUnit
-import javax.inject.Singleton
 
 @Module
 class LocationModule {

@@ -6,6 +6,7 @@ import androidx.lifecycle.ViewModelProviders
 import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
 import communication.hardware.clean.di.activity.ActivityComponent
+import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.ui.data.ResourceState
 import kotlinx.android.synthetic.main.activity_main.*
 
@@ -20,9 +21,6 @@ class MainActivity : BaseActivity() {
 
         setListener()
 
-//        mainActivityViewModel.getLocation()
-//        mainActivityViewModel.getLocations()
-
         button_get_one_location.setOnClickListener {
             mainActivityViewModel.getLocation()
         }
@@ -34,6 +32,14 @@ class MainActivity : BaseActivity() {
         button_stop_locations.setOnClickListener {
             mainActivityViewModel.stopLocations()
         }
+
+        button_send_sms.setOnClickListener {
+            mainActivityViewModel.sendSms(Sms(destinationAddress.text.toString(), message.text.toString()))
+        }
+
+        button_read_sms.setOnClickListener {
+            mainActivityViewModel.getSms()
+        }
     }
 
     private fun setListener() {
@@ -43,6 +49,17 @@ class MainActivity : BaseActivity() {
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
                         location_result.text = "$this"
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.smsUseCaseLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        sms_read.text = this.text
                     }
                 }
             }

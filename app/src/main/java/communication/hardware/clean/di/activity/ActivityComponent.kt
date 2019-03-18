@@ -10,7 +10,10 @@ import dagger.Component
     dependencies = [ApplicationComponent::class],
     modules = [
         ActivityModule::class,
+        CameraModule::class,
         LocationModule::class,
+        SensorModule::class,
+        SmsModule::class,
         UseCaseModule::class,
         ViewModelFactoryModule::class,
         ViewModelModule::class
@@ -22,7 +25,8 @@ interface ActivityComponent : ActivityComponentExposes {
     fun inject(mainActivity: MainActivity)
 
     companion object {
-        fun init(daggerActivity: DaggerActivity, applicationComponent: ApplicationComponent): ActivityComponent = DaggerActivityComponent.builder()
+        fun init(daggerActivity: DaggerActivity, applicationComponent: ApplicationComponent): ActivityComponent =
+            DaggerActivityComponent.builder()
                 .applicationComponent(applicationComponent)
                 .activityModule(ActivityModule(daggerActivity))
                 .build()

@@ -2,9 +2,7 @@ package communication.hardware.clean.di.application
 
 import communication.hardware.clean.AppApplication
 import communication.hardware.clean.di.application.module.ApplicationModule
-import communication.hardware.clean.di.activity.module.LocationModule
 import communication.hardware.clean.di.application.module.SchedulerModule
-import communication.hardware.clean.di.application.module.UseCaseModule
 import dagger.Component
 import javax.inject.Singleton
 
@@ -12,9 +10,7 @@ import javax.inject.Singleton
 @Component(
     modules = [
         ApplicationModule::class,
-        LocationModule::class,
-        SchedulerModule::class,
-        UseCaseModule::class]
+        SchedulerModule::class]
 )
 
 interface ApplicationComponent : ApplicationComponentExposes {

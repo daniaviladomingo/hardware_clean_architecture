@@ -6,6 +6,8 @@ import communication.hardware.clean.di.activity.ViewModelKey
 import communication.hardware.clean.domain.interactor.location.GetLocationUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationsUseCase
 import communication.hardware.clean.domain.interactor.location.StopLocationsUseCase
+import communication.hardware.clean.domain.interactor.sms.GetSmsUseCase
+import communication.hardware.clean.domain.interactor.sms.SendSmsUseCase
 import communication.hardware.clean.schedulers.IScheduleProvider
 import communication.hardware.clean.ui.MainActivityViewModel
 import dagger.Module
@@ -23,16 +25,16 @@ class ViewModelModule {
         getLocationUseCase: GetLocationUseCase,
         getLocationsUseCase: GetLocationsUseCase,
         stopLocationsUseCase: StopLocationsUseCase,
+        getSmsUseCase: GetSmsUseCase,
+        sendSmsUseCase: SendSmsUseCase,
+//        takePictureUseCase: TakePictureUseCase,
         scheduler: IScheduleProvider
-//        getSmsUseCase: GetSmsUseCase,
-//        sendSmsUseCase: SendSmsUseCase,
-//        takePictureUseCase: TakePictureUseCase
     ): ViewModel = MainActivityViewModel(
         getLocationUseCase,
         getLocationsUseCase,
         stopLocationsUseCase,
-//        getSmsUseCase,
-//        sendSmsUseCase,
+        getSmsUseCase,
+        sendSmsUseCase,
 //        takePictureUseCase
         scheduler
     )

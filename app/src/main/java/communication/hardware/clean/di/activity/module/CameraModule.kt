@@ -1,46 +1,40 @@
 @file:Suppress("DEPRECATION")
 
-package communication.hardware.clean.di.application.module
+package communication.hardware.clean.di.activity.module
 
 import android.content.Context
-import android.hardware.Camera
 import android.view.*
-import communication.hardware.clean.device.CameraImp
-import communication.hardware.clean.di.application.BackCamera
+import androidx.lifecycle.Lifecycle
+import communication.hardware.clean.device.camera.CameraId
+import communication.hardware.clean.device.camera.CameraImp
+import communication.hardware.clean.di.activity.ActivityScope
+import communication.hardware.clean.di.activity.ForActivity
 import communication.hardware.clean.di.application.ForApplication
-import communication.hardware.clean.di.application.FrontCamera
 import communication.hardware.clean.domain.camera.ICamera
 import dagger.Module
 import dagger.Provides
-import javax.inject.Singleton
 
 @Module
 class CameraModule {
-
     @Provides
-    @Singleton
+    @ActivityScope
     fun provideCamera(
-        @BackCamera cameraId: Int,
-        windowManager: WindowManager,
+        @ForApplication context: Context,
+        @ForActivity lifecycle: Lifecycle,
+        cameraId: CameraId,
         surfaceView: SurfaceView
     ): ICamera = CameraImp(
-        cameraId,
-        windowManager,
+        context,
+        lifecycle, cameraId,
         surfaceView
     )
 
     @Provides
-    @Singleton
-    @BackCamera
-    fun provideBackCamera(): Int = Camera.CameraInfo.CAMERA_FACING_BACK
+    @ActivityScope
+    fun provideCameraId(): CameraId = CameraId.BACK
 
     @Provides
-    @Singleton
-    @FrontCamera
-    fun provideFrontCamera(): Int = Camera.CameraInfo.CAMERA_FACING_FRONT
-
-    @Provides
-    @Singleton
+    @ActivityScope
     fun provideSurfaceView(@ForApplication context: Context): SurfaceView = SurfaceView(context).apply {
         layoutParams = ViewGroup.LayoutParams(ViewGroup.LayoutParams.MATCH_PARENT, ViewGroup.LayoutParams.MATCH_PARENT)
     }

@@ -23,6 +23,7 @@ class SmsImp(
     private val context: Context,
     lifecycle: Lifecycle
 ) : ISms, LifecycleObserver {
+    private var startListenIncomingSms = false
 
     private val smsManager: SmsManager = SmsManager.getDefault()
     private val incomingSmsBroadcastaReceiver = IncomingSmsBroadcastaReceiver()
@@ -35,27 +36,37 @@ class SmsImp(
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     @Synchronized
     fun start() {
-        if (!context.isPermissionGranted(Manifest.permission.SEND_SMS)) {
-            throw IllegalAccessError("${Manifest.permission.SEND_SMS} do not granted")
+        if (startListenIncomingSms) {
+            if (!context.isPermissionGranted(Manifest.permission.RECEIVE_SMS)) {
+                throw IllegalAccessError("${Manifest.permission.RECEIVE_SMS} do not granted")
+            }
+            context.registerReceiver(
+                incomingSmsBroadcastaReceiver,
+                IntentFilter().apply { addAction("android.provider.Telephony.SMS_RECEIVED") })
         }
-        context.registerReceiver(
-            incomingSmsBroadcastaReceiver,
-            IntentFilter().apply { addAction("android.provider.Telephony.SMS_RECEIVED") })
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     @Synchronized
     fun stop() {
-        context.unregisterReceiver(incomingSmsBroadcastaReceiver)
+        if (startListenIncomingSms) {
+            context.unregisterReceiver(incomingSmsBroadcastaReceiver)
+        }
     }
 
     override fun getSms(): Single<Sms> = Single.create {
+        startListenIncomingSms = true
+        start()
         incomingSmsBroadcastaReceiver.smsListener = { sms ->
             it.onSuccess(sms)
         }
     }
 
     override fun sendSms(sms: Sms): Completable = Completable.create {
+        if (!context.isPermissionGranted(Manifest.permission.SEND_SMS)) {
+            throw IllegalAccessError("${Manifest.permission.SEND_SMS} do not granted")
+        }
+
         if (sms.text.trim().isEmpty() || sms.destinationAddress.trim().isEmpty()) {
             it.onError(Throwable("destinationAddress & text can't be empty"))
         } else {
