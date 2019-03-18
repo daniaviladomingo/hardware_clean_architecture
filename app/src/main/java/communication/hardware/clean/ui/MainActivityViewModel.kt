@@ -10,6 +10,7 @@ import communication.hardware.clean.domain.location.model.Location
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.schedulers.IScheduleProvider
 import communication.hardware.clean.ui.data.Resource
+import communication.hardware.clean.util.log
 
 class MainActivityViewModel(
     private val getLocationUseCase: SingleUseCase<Location>,

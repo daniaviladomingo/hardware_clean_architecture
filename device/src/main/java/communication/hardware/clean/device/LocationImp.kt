@@ -29,7 +29,6 @@ class LocationImp(
     private val minAccuracy: Int
 ) : ILocation, LifecycleObserver {
 
-    private var getOnlyOneLocation = false
     private var locating = false
     private var initLocating = false
 
@@ -90,20 +89,16 @@ class LocationImp(
 
     @SuppressLint("MissingPermission")
     override fun getLocation(): Single<Location> = Single.create { emitter ->
-        getOnlyOneLocation = true
         initLocating = true
         start()
         rxPipe = { location ->
-            if (getOnlyOneLocation) {
-                stop()
-            }
+            stop()
             emitter.onSuccess(location)
         }
     }
 
     @SuppressLint("MissingPermission")
     override fun getLocations(): Observable<Location> = Observable.create { emitter ->
-        getOnlyOneLocation = false
         initLocating = true
         start()
         rxPipe = { location ->
