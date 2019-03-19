@@ -7,10 +7,10 @@ import communication.hardware.clean.domain.interactor.type.CompletableUseCaseWit
 import communication.hardware.clean.domain.interactor.type.ObservableUseCase
 import communication.hardware.clean.domain.interactor.type.SingleUseCase
 import communication.hardware.clean.domain.location.model.Location
+import communication.hardware.clean.domain.model.mapper.Mapper
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.schedulers.IScheduleProvider
 import communication.hardware.clean.ui.data.Resource
-import communication.hardware.clean.util.log
 
 class MainActivityViewModel(
     private val getLocationUseCase: SingleUseCase<Location>,
@@ -18,12 +18,15 @@ class MainActivityViewModel(
     private val stopLocationsUseCase: CompletableUseCase,
     private val getSmsUseCase: SingleUseCase<Sms>,
     private val sendSmsUseCase: CompletableUseCaseWithParameter<Sms>,
+    private val shakinUseCase: ObservableUseCase<Unit>,
 //    private val takePictureUseCase: SingleUseCase<Picture>,
-    private val scheduleProvider: IScheduleProvider
+    private val scheduleProvider: IScheduleProvider,
+    private val shakeMapper: Mapper<Unit, String>
 ) : BaseViewModel() {
 
     val locationUseCaseLiveData = SingleLiveEvent<Resource<Location>>()
     val smsUseCaseLiveData = SingleLiveEvent<Resource<Sms>>()
+    val shakeLiveData = SingleLiveEvent<Resource<String>>()
 
     fun getLocation() {
         locationUseCaseLiveData.value = Resource.loading()
@@ -77,6 +80,17 @@ class MainActivityViewModel(
                 smsUseCaseLiveData.value = Resource.success(sms)
             }) {
                 smsUseCaseLiveData.value = Resource.error(it.localizedMessage)
+            })
+    }
+
+    fun isShaking() {
+        addDisposable(shakinUseCase.execute()
+            .observeOn(scheduleProvider.ui())
+            .subscribeOn(scheduleProvider.io())
+            .subscribe({
+                shakeLiveData.value = Resource.success(shakeMapper.map(Unit))
+            }) {
+                shakeLiveData.value = Resource.error(it.localizedMessage)
             })
     }
 }

@@ -40,6 +40,8 @@ class MainActivity : BaseActivity() {
         button_read_sms.setOnClickListener {
             mainActivityViewModel.getSms()
         }
+
+        mainActivityViewModel.isShaking()
     }
 
     private fun setListener() {
@@ -60,6 +62,17 @@ class MainActivity : BaseActivity() {
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
                         sms_read.text = this.text
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.shakeLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        shaked_at.text = String.format("Shaked at: %s", this)
                     }
                 }
             }

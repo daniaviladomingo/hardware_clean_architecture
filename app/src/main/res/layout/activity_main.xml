@@ -108,6 +108,21 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
+        <!-- SENSOR MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test Sensor Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:gravity="center_horizontal"
+                android:id="@+id/shaked_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
 
     </LinearLayout>
 

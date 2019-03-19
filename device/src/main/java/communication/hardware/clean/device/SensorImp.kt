@@ -32,7 +32,7 @@ class SensorImp(
         lifecycle.addObserver(this)
     }
 
-    override fun shaked(): Observable<Unit> = Observable.create {
+    override fun shaking(): Observable<Unit> = Observable.create {
         rxPipe = {
             it.onNext(Unit)
         }
@@ -58,11 +58,11 @@ class SensorImp(
 
             val curTime = System.currentTimeMillis()
 
-            if (curTime - lastUpdate > 500) {
+            if (curTime - lastUpdate > 200) {
                 val diffTime = curTime - lastUpdate
                 lastUpdate = curTime
 
-                val speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 10000
+                val speed = Math.abs(x + y + z - lastX - lastY - lastZ) / diffTime * 5000
 
                 if (speed > shakeThreshold) {
                     rxPipe.invoke()

@@ -17,8 +17,8 @@ class SensorModule {
     fun provideSensor(
         @ForApplication context: Context,
         @ForActivity lifecycle: Lifecycle,
-        samplingPeriodUs: Int,
-        shakeThreshold: Int
+        @SamplingPeriodUs samplingPeriodUs: Int,
+        @ShakeThreshold shakeThreshold: Int
     ): ISensor = SensorImp(
         context,
         lifecycle,
