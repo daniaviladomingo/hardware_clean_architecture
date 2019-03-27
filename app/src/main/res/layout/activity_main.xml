@@ -119,9 +119,49 @@
 
         <TextView
                 android:gravity="center_horizontal"
+                android:text="Shake device to test!!"
                 android:id="@+id/shaked_at"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+        <!-- CAMERA SENSOR MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test Camera Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+            <FrameLayout
+                    android:id="@+id/surface_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+            <Button
+                    android:id="@+id/button_take_photo"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="Take Photo"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <ImageView
+                    android:id="@+id/image_picture"
+                    android:contentDescription="@null"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"/>
+
+        </LinearLayout>
 
 
     </LinearLayout>

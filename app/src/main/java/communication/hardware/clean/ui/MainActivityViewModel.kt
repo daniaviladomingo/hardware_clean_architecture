@@ -2,6 +2,7 @@ package communication.hardware.clean.ui
 
 import communication.hardware.clean.SingleLiveEvent
 import communication.hardware.clean.base.BaseViewModel
+import communication.hardware.clean.domain.camera.model.Picture
 import communication.hardware.clean.domain.interactor.type.CompletableUseCase
 import communication.hardware.clean.domain.interactor.type.CompletableUseCaseWithParameter
 import communication.hardware.clean.domain.interactor.type.ObservableUseCase
@@ -19,7 +20,7 @@ class MainActivityViewModel(
     private val getSmsUseCase: SingleUseCase<Sms>,
     private val sendSmsUseCase: CompletableUseCaseWithParameter<Sms>,
     private val shakinUseCase: ObservableUseCase<Unit>,
-//    private val takePictureUseCase: SingleUseCase<Picture>,
+    private val takePictureUseCase: SingleUseCase<Picture>,
     private val scheduleProvider: IScheduleProvider,
     private val shakeMapper: Mapper<Unit, String>
 ) : BaseViewModel() {
@@ -27,6 +28,7 @@ class MainActivityViewModel(
     val locationUseCaseLiveData = SingleLiveEvent<Resource<Location>>()
     val smsUseCaseLiveData = SingleLiveEvent<Resource<Sms>>()
     val shakeLiveData = SingleLiveEvent<Resource<String>>()
+    var takePictureLiveData = SingleLiveEvent<Resource<Picture>>()
 
     fun getLocation() {
         locationUseCaseLiveData.value = Resource.loading()
@@ -91,6 +93,16 @@ class MainActivityViewModel(
                 shakeLiveData.value = Resource.success(shakeMapper.map(Unit))
             }) {
                 shakeLiveData.value = Resource.error(it.localizedMessage)
+            })
+    }
+
+    fun takePicture() {
+        takePictureLiveData.value = Resource.loading()
+        addDisposable(takePictureUseCase.execute()
+            .subscribe({ picture ->
+                takePictureLiveData.value = Resource.success(picture)
+            }) {
+                takePictureLiveData.value = Resource.error(it.localizedMessage)
             })
     }
 }

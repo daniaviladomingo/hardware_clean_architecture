@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import communication.hardware.clean.di.activity.ActivityScope
 import communication.hardware.clean.di.activity.ViewModelKey
 import communication.hardware.clean.domain.interactor.ShakingUseCase
+import communication.hardware.clean.domain.interactor.TakePictureUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationsUseCase
 import communication.hardware.clean.domain.interactor.location.StopLocationsUseCase
@@ -30,7 +31,7 @@ class ViewModelModule {
         getSmsUseCase: GetSmsUseCase,
         sendSmsUseCase: SendSmsUseCase,
         shakingUseCase: ShakingUseCase,
-//        takePictureUseCase: TakePictureUseCase,
+        takePictureUseCase: TakePictureUseCase,
         scheduler: IScheduleProvider,
         shakeMapper: ShakeMapper
     ): ViewModel = MainActivityViewModel(
@@ -40,7 +41,7 @@ class ViewModelModule {
         getSmsUseCase,
         sendSmsUseCase,
         shakingUseCase,
-//        takePictureUseCase
+        takePictureUseCase,
         scheduler,
         shakeMapper
     )
