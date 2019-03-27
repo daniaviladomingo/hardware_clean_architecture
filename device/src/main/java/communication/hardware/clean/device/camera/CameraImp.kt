@@ -28,7 +28,7 @@ class CameraImp(
 ) : ICamera, LifecycleObserver {
 
     private var camera: Camera? = null
-    private val screenSize: Size
+    private val screenAspectRatio: Float
     private val cameraInfo = Camera.CameraInfo()
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -42,7 +42,7 @@ class CameraImp(
 
         lifecycle.addObserver(this)
 
-        screenSize = screenSize()
+        screenAspectRatio = screenSize().run { witdh / height.toFloat() }
         Camera.getCameraInfo(cameraId.id, cameraInfo)
 
         surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
@@ -86,21 +86,55 @@ class CameraImp(
                     }
                 }
 
+                var diff = Float.MAX_VALUE
+                var previewWidth = 0
+                var previewHeight = 0
+
                 customParameters.supportedPreviewSizes
-                    .filter { (screenSize.witdh / screenSize.height.toFloat()) == (it.width / it.height.toFloat()) }
                     .sortedByDescending { it.width }
+                    .apply {
+                        this.forEach {
+                            val previewDiff = Math.abs((it.width / it.height.toFloat()) - screenAspectRatio)
+                            if (previewDiff < diff) {
+                                diff = previewDiff
+                                previewWidth = it.width
+                                previewHeight = it.height
+                            }
+                        }
+                    }
+                    .filter { screenAspectRatio == (it.width / it.height.toFloat()) }
                     .run {
-                        get(if (size > 1) 1 else 0).run {
-                            customParameters.setPreviewSize(width, height)
+                        if (size > 0) {
+                            get(if (size > 1) 1 else 0).run {
+                                customParameters.setPreviewSize(width, height)
+                            }
+                        } else {
+                            customParameters.setPreviewSize(previewWidth, previewHeight)
                         }
                     }
 
+                diff = Float.MAX_VALUE
+
                 customParameters.supportedPictureSizes
-                    .filter { (screenSize.witdh / screenSize.height.toFloat()) == (it.width / it.height.toFloat()) }
                     .sortedByDescending { it.width }
+                    .apply {
+                        this.forEach {
+                            val previewDiff = Math.abs((it.width / it.height.toFloat()) - screenAspectRatio)
+                            if (previewDiff < diff) {
+                                diff = previewDiff
+                                previewWidth = it.width
+                                previewHeight = it.height
+                            }
+                        }
+                    }
+                    .filter { screenAspectRatio == (it.width / it.height.toFloat()) }
                     .run {
-                        get(if (size > 1) 1 else 0).run {
-                            customParameters.setPictureSize(width, height)
+                        if (size > 0) {
+                            get(if (size > 1) 1 else 0).run {
+                                customParameters.setPictureSize(width, height)
+                            }
+                        } else {
+                            customParameters.setPictureSize(previewWidth, previewHeight)
                         }
                     }
 
@@ -110,7 +144,8 @@ class CameraImp(
                 setDisplayOrientation(rotationDegrees())
                 startPreview()
             }
-        } catch (e: RuntimeException) { }
+        } catch (e: RuntimeException) {
+        }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)

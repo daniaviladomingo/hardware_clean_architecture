@@ -12,6 +12,7 @@ import dagger.Component
         ActivityModule::class,
         CameraModule::class,
         LocationModule::class,
+        NfcModule::class,
         SensorModule::class,
         SmsModule::class,
         UseCaseModule::class,
