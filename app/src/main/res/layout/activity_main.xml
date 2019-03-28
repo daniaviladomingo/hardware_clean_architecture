@@ -44,6 +44,7 @@
 
             <ImageView
                     android:id="@+id/image_picture"
+                    android:scaleType="fitXY"
                     android:background="@android:color/holo_blue_dark"
                     android:contentDescription="@null"
                     android:layout_weight="1"
@@ -110,7 +111,7 @@
         <TextView
                 android:textColor="@android:color/holo_blue_dark"
                 android:gravity="center_horizontal"
-                android:text="Shake device to test!!"
+                android:text="Shake device to test !!"
                 android:id="@+id/shaked_at"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>

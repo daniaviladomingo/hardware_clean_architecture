@@ -5,7 +5,7 @@ package communication.hardware.clean.device.camera
 import android.Manifest
 import android.content.Context
 import android.content.pm.PackageManager
-import android.graphics.Point
+//import android.graphics.Point
 import android.hardware.Camera
 import android.view.Surface
 import android.view.SurfaceHolder
@@ -19,6 +19,7 @@ import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.domain.camera.ICamera
 import communication.hardware.clean.domain.camera.model.Picture
 import io.reactivex.Single
+import java.lang.Math.abs
 
 class CameraImp(
     private val context: Context,
@@ -28,7 +29,7 @@ class CameraImp(
 ) : ICamera, LifecycleObserver {
 
     private var camera: Camera? = null
-    private val screenAspectRatio: Float
+//    private val screenAspectRatio: Float
     private val cameraInfo = Camera.CameraInfo()
     private val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager
 
@@ -42,7 +43,7 @@ class CameraImp(
 
         lifecycle.addObserver(this)
 
-        screenAspectRatio = screenSize().run { witdh / height.toFloat() }
+//        screenAspectRatio = screenSize().run { witdh / height.toFloat() }
         Camera.getCameraInfo(cameraId.id, cameraInfo)
 
         surfaceView.holder.addCallback(object : SurfaceHolder.Callback {
@@ -69,82 +70,81 @@ class CameraImp(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun start() {
-        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
-            throw IllegalAccessError("${Manifest.permission.CAMERA} do not granted")
-        }
-        try {
-            camera = Camera.open(cameraId.id).apply {
-                val customParameters = parameters
-                customParameters.supportedFocusModes.run {
-                    when {
-                        this.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE) -> customParameters.focusMode =
-                            Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
-                        this.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO) -> customParameters.focusMode =
-                            Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
-                        this.contains(Camera.Parameters.FOCUS_MODE_AUTO) -> customParameters.focusMode =
-                            Camera.Parameters.FOCUS_MODE_AUTO
+        if (context.isPermissionGranted(Manifest.permission.CAMERA)) {
+            try {
+                camera = Camera.open(cameraId.id).apply {
+                    val customParameters = parameters
+                    customParameters.supportedFocusModes.run {
+                        when {
+                            this.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE) -> customParameters.focusMode =
+                                Camera.Parameters.FOCUS_MODE_CONTINUOUS_PICTURE
+                            this.contains(Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO) -> customParameters.focusMode =
+                                Camera.Parameters.FOCUS_MODE_CONTINUOUS_VIDEO
+                            this.contains(Camera.Parameters.FOCUS_MODE_AUTO) -> customParameters.focusMode =
+                                Camera.Parameters.FOCUS_MODE_AUTO
+                        }
                     }
+
+                    var diff = Float.MAX_VALUE
+                    var previewWidth = 0
+                    var previewHeight = 0
+
+                    customParameters.supportedPreviewSizes
+                        .sortedByDescending { it.width }
+                        .apply {
+                            this.forEach {
+                                val previewDiff = abs(it.width - it.height.toFloat())
+                                if (previewDiff < diff) {
+                                    diff = previewDiff
+                                    previewWidth = it.width
+                                    previewHeight = it.height
+                                }
+                            }
+                        }
+                        .filter { it.width == it.height }
+                        .run {
+                            if (size > 0) {
+                                get(if (size > 1) 1 else 0).run {
+                                    customParameters.setPreviewSize(width, height)
+                                }
+                            } else {
+                                customParameters.setPreviewSize(previewWidth, previewHeight)
+                            }
+                        }
+
+                    diff = Float.MAX_VALUE
+
+                    customParameters.supportedPictureSizes
+                        .sortedByDescending { it.width }
+                        .apply {
+                            this.forEach {
+                                val previewDiff = abs(it.width - it.height.toFloat())
+                                if (previewDiff < diff) {
+                                    diff = previewDiff
+                                    previewWidth = it.width
+                                    previewHeight = it.height
+                                }
+                            }
+                        }
+                        .filter { it.width == it.height }
+                        .run {
+                            if (size > 0) {
+                                get(if (size > 1) 1 else 0).run {
+                                    customParameters.setPictureSize(width, height)
+                                }
+                            } else {
+                                customParameters.setPictureSize(previewWidth, previewHeight)
+                            }
+                        }
+
+                    parameters = customParameters
+
+                    setPreviewDisplay(surfaceView.holder)
+                    setDisplayOrientation(rotationDegrees())
+                    startPreview()
                 }
-
-                var diff = Float.MAX_VALUE
-                var previewWidth = 0
-                var previewHeight = 0
-
-                customParameters.supportedPreviewSizes
-                    .sortedByDescending { it.width }
-                    .apply {
-                        this.forEach {
-                            val previewDiff = Math.abs((it.width / it.height.toFloat()) - screenAspectRatio)
-                            if (previewDiff < diff) {
-                                diff = previewDiff
-                                previewWidth = it.width
-                                previewHeight = it.height
-                            }
-                        }
-                    }
-                    .filter { screenAspectRatio == (it.width / it.height.toFloat()) }
-                    .run {
-                        if (size > 0) {
-                            get(if (size > 1) 1 else 0).run {
-                                customParameters.setPreviewSize(width, height)
-                            }
-                        } else {
-                            customParameters.setPreviewSize(previewWidth, previewHeight)
-                        }
-                    }
-
-                diff = Float.MAX_VALUE
-
-                customParameters.supportedPictureSizes
-                    .sortedByDescending { it.width }
-                    .apply {
-                        this.forEach {
-                            val previewDiff = Math.abs((it.width / it.height.toFloat()) - screenAspectRatio)
-                            if (previewDiff < diff) {
-                                diff = previewDiff
-                                previewWidth = it.width
-                                previewHeight = it.height
-                            }
-                        }
-                    }
-                    .filter { screenAspectRatio == (it.width / it.height.toFloat()) }
-                    .run {
-                        if (size > 0) {
-                            get(if (size > 1) 1 else 0).run {
-                                customParameters.setPictureSize(width, height)
-                            }
-                        } else {
-                            customParameters.setPictureSize(previewWidth, previewHeight)
-                        }
-                    }
-
-                parameters = customParameters
-
-                setPreviewDisplay(surfaceView.holder)
-                setDisplayOrientation(rotationDegrees())
-                startPreview()
+            } catch (e: RuntimeException) {
             }
-        } catch (e: RuntimeException) {
         }
     }
 
@@ -155,23 +155,28 @@ class CameraImp(
         camera = null
     }
 
-    override fun takeImage(): Single<Picture> = Single.create {
-        camera?.takePicture(null, null, null,
-            { data, camera ->
-                camera.startPreview()
-                it.onSuccess(Picture(data, rotationDegrees()))
-            }
-        ) ?: it.onError(Throwable("Camera not initialize"))
+    override fun takeImage(): Single<Picture> {
+        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
+            throw IllegalAccessError("${Manifest.permission.CAMERA} do not granted")
+        }
+        return Single.create {
+            camera?.takePicture(null, null, null,
+                { data, camera ->
+                    camera.startPreview()
+                    it.onSuccess(Picture(data, rotationDegrees()))
+                }
+            ) ?: it.onError(Throwable("Camera not initialize"))
+        }
     }
 
-    private fun screenSize(): Size =
-        Point().apply { windowManager.defaultDisplay.getSize(this) }.let { point ->
-            if (point.x > point.y) {
-                Size(point.x, point.y)
-            } else {
-                Size(point.y, point.x)
-            }
-        }
+//    private fun screenSize(): Size =
+//        Point().apply { windowManager.defaultDisplay.getSize(this) }.let { point ->
+//            if (point.x > point.y) {
+//                Size(point.x, point.y)
+//            } else {
+//                Size(point.y, point.x)
+//            }
+//        }
 
     private fun rotationDegrees(): Int {
         var rotationDegrees = when (windowManager.defaultDisplay.rotation) {
@@ -189,5 +194,5 @@ class CameraImp(
         return (cameraInfo.orientation + rotationDegrees) % 360
     }
 
-    data class Size(val witdh: Int, val height: Int)
+//    data class Size(val witdh: Int, val height: Int)
 }
