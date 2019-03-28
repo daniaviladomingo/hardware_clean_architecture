@@ -1,15 +1,16 @@
 package communication.hardware.clean.ui
 
-import android.Manifest
 import android.os.Bundle
 import android.view.SurfaceView
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProviders
 import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
+import communication.hardware.clean.device.util.hasNFCFeature
 import communication.hardware.clean.di.activity.ActivityComponent
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.ui.data.ResourceState
+import communication.hardware.clean.util.rotate
 import communication.hardware.clean.util.toBitmap
 import kotlinx.android.synthetic.main.activity_main.*
 import javax.inject.Inject
@@ -27,6 +28,10 @@ class MainActivity : BaseActivity() {
         mainActivityViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
         setListener()
+
+        button_take_photo.setOnClickListener {
+            mainActivityViewModel.takePicture()
+        }
 
         button_get_one_location.setOnClickListener {
             mainActivityViewModel.getLocation()
@@ -48,11 +53,12 @@ class MainActivity : BaseActivity() {
             mainActivityViewModel.getSms()
         }
 
-        button_take_photo.setOnClickListener {
-            mainActivityViewModel.takePicture()
-        }
-
         mainActivityViewModel.isShaking()
+        if (hasNFCFeature()) {
+            mainActivityViewModel.readNfcTag()
+        } else {
+            id_nfc_tag.text = "Device hasn't NFC feature !!!"
+        }
     }
 
     override fun onResume() {
@@ -71,7 +77,8 @@ class MainActivity : BaseActivity() {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
-                        location_result.text = "$this"
+                        location_result.text =
+                            String.format("(lat: %d, lon: %d, acc: %f)", this.latitude, this.longitude, this.accuracy)
                     }
                 }
             }
@@ -104,7 +111,18 @@ class MainActivity : BaseActivity() {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
-                        image_picture.setImageBitmap(picture.toBitmap())
+                        image_picture.setImageBitmap(picture.toBitmap().rotate(degrees.toFloat()))
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.readNfcTagLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        id_nfc_tag.text = this
                     }
                 }
             }

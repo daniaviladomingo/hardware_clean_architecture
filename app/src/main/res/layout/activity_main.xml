@@ -8,9 +8,49 @@
 
     <LinearLayout
             android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
             android:orientation="vertical"
             android:layout_width="match_parent"
             android:layout_height="wrap_content">
+
+        <!-- CAMERA SENSOR MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test Camera Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="100dp">
+
+            <FrameLayout
+                    android:id="@+id/surface_view"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <Button
+                    android:id="@+id/button_take_photo"
+                    android:layout_marginRight="5dp"
+                    android:layout_marginLeft="5dp"
+                    android:text="Take Photo"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+            <ImageView
+                    android:id="@+id/image_picture"
+                    android:background="@android:color/holo_blue_dark"
+                    android:contentDescription="@null"
+                    android:layout_weight="1"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"/>
+
+        </LinearLayout>
 
         <!-- LOCATION MODULE -->
 
@@ -45,6 +85,8 @@
         <TextView
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="5dp"
+                android:textColor="@android:color/holo_blue_dark"
+                android:text="(lat: ?, lon: ?, acc: ?)"
                 android:layout_marginBottom="5dp"
                 android:id="@+id/location_result"
                 android:layout_width="wrap_content"
@@ -55,6 +97,53 @@
                 android:text="Stop Locations"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
+
+        <!-- SENSOR MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test Sensor Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <TextView
+                android:textColor="@android:color/holo_blue_dark"
+                android:gravity="center_horizontal"
+                android:text="Shake device to test!!"
+                android:id="@+id/shaked_at"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"/>
+
+        <!-- NFC SENSOR MODULE -->
+
+        <TextView
+                android:layout_marginTop="20dp"
+                style="@style/TitleModule"
+                android:text="Test NFC Module"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+
+        <LinearLayout
+                android:orientation="horizontal"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+            <TextView
+                    android:text="Tap NFC Tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+            <TextView
+                    android:id="@+id/id_nfc_tag"
+                    android:textColor="@android:color/holo_blue_dark"
+                    android:text="Id NFC Tag"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"/>
+
+        </LinearLayout>
 
         <!-- SMS MODULE -->
 
@@ -78,7 +167,7 @@
                     android:inputType="phone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="2"/>
 
             <EditText
                     android:imeOptions="actionDone"
@@ -98,71 +187,21 @@
                 android:layout_height="wrap_content"/>
 
         <TextView
+                android:textColor="@android:color/holo_blue_dark"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
                 android:id="@+id/sms_read"
+                android:gravity="center_horizontal"
+                android:text="SMS will receive"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
 
         <Button
                 android:id="@+id/button_read_sms"
                 android:text="READ INCOMING SMS"
+                android:layout_marginBottom="20dp"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"/>
-
-        <!-- SENSOR MODULE -->
-
-        <TextView
-                android:layout_marginTop="20dp"
-                style="@style/TitleModule"
-                android:text="Test Sensor Module"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-        <TextView
-                android:gravity="center_horizontal"
-                android:text="Shake device to test!!"
-                android:id="@+id/shaked_at"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <!-- CAMERA SENSOR MODULE -->
-
-        <TextView
-                android:layout_marginTop="20dp"
-                style="@style/TitleModule"
-                android:text="Test Camera Module"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
-
-
-        <LinearLayout
-                android:orientation="horizontal"
-                android:layout_width="match_parent"
-                android:layout_height="100dp">
-
-            <FrameLayout
-                    android:id="@+id/surface_view"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-
-            <Button
-                    android:id="@+id/button_take_photo"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:text="Take Photo"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"/>
-
-            <ImageView
-                    android:id="@+id/image_picture"
-                    android:contentDescription="@null"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"/>
-
-        </LinearLayout>
-
 
     </LinearLayout>
 

@@ -6,6 +6,7 @@ import android.os.Bundle
 import androidx.lifecycle.Lifecycle
 import communication.hardware.clean.device.NfcImp
 import communication.hardware.clean.di.activity.ActivityScope
+import communication.hardware.clean.di.activity.ForActivity
 import communication.hardware.clean.domain.nfc.INfc
 import dagger.Module
 import dagger.Provides
@@ -16,7 +17,7 @@ class NfcModule {
     @ActivityScope
     fun provideSensorHardware(
         activity: Activity,
-        @ActivityScope lifecycle: Lifecycle,
+        @ForActivity lifecycle: Lifecycle,
         flags: Int,
         extras: Bundle
     ): INfc = NfcImp(

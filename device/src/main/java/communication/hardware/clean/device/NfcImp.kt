@@ -23,23 +23,27 @@ class NfcImp(
 
     private var rxBus: (ByteArray) -> Unit = {}
 
-    private var nfcAdapter: NfcAdapter = NfcAdapter.getDefaultAdapter(activity)
-        ?: throw IllegalHardwareException("Device hasn't NFC feature")
+    private var nfcAdapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(activity)
 
-    override fun getIdTag(): Observable<ByteArray> = Observable.create {
-        rxBus = { tag ->
-            it.onNext(tag)
+    override fun getIdTag(): Observable<ByteArray> {
+        if (nfcAdapter == null) {
+            throw IllegalHardwareException("Device hasn't NFC feature")
+        }
+        return Observable.create {
+            rxBus = { tag ->
+                it.onNext(tag)
+            }
         }
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     private fun onStop() {
-        nfcAdapter.disableReaderMode(activity)
+        nfcAdapter?.disableReaderMode(activity)
     }
 
     @OnLifecycleEvent(Lifecycle.Event.ON_START)
     private fun onStart() {
-        nfcAdapter.enableReaderMode(
+        nfcAdapter?.enableReaderMode(
             activity,
             { tag ->
                 rxBus.invoke(tag.id)

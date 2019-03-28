@@ -21,14 +21,17 @@ class MainActivityViewModel(
     private val sendSmsUseCase: CompletableUseCaseWithParameter<Sms>,
     private val shakinUseCase: ObservableUseCase<Unit>,
     private val takePictureUseCase: SingleUseCase<Picture>,
+    private val readNfcUseCase: ObservableUseCase<ByteArray>,
     private val scheduleProvider: IScheduleProvider,
-    private val shakeMapper: Mapper<Unit, String>
+    private val shakeMapper: Mapper<Unit, String>,
+    private val nfcMapper: Mapper<ByteArray, String>
 ) : BaseViewModel() {
 
     val locationUseCaseLiveData = SingleLiveEvent<Resource<Location>>()
     val smsUseCaseLiveData = SingleLiveEvent<Resource<Sms>>()
     val shakeLiveData = SingleLiveEvent<Resource<String>>()
     var takePictureLiveData = SingleLiveEvent<Resource<Picture>>()
+    var readNfcTagLiveData = SingleLiveEvent<Resource<String>>()
 
     fun getLocation() {
         locationUseCaseLiveData.value = Resource.loading()
@@ -103,6 +106,17 @@ class MainActivityViewModel(
                 takePictureLiveData.value = Resource.success(picture)
             }) {
                 takePictureLiveData.value = Resource.error(it.localizedMessage)
+            })
+    }
+
+    fun readNfcTag() {
+        addDisposable(readNfcUseCase.execute()
+            .observeOn(scheduleProvider.ui())
+            .subscribeOn(scheduleProvider.io())
+            .subscribe({ idTag ->
+                readNfcTagLiveData.value = Resource.success(nfcMapper.map(idTag))
+            }) {
+                readNfcTagLiveData.value = Resource.error(it.localizedMessage)
             })
     }
 }

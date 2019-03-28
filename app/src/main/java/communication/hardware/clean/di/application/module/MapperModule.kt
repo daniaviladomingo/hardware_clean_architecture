@@ -1,6 +1,7 @@
 package communication.hardware.clean.di.application.module
 
 import communication.hardware.clean.di.application.DatePattern
+import communication.hardware.clean.model.mapper.NfcMapper
 import communication.hardware.clean.model.mapper.ShakeMapper
 import dagger.Module
 import dagger.Provides
@@ -25,7 +26,12 @@ class MapperModule {
     @DatePattern
     fun provideDatePattern(): String = "HH:mm:ss"
 
+    @Provides
+    @Singleton
+    fun provideNfcMapper(): NfcMapper = NfcMapper()
+
     interface Exposes {
         fun shakeMapper(): ShakeMapper
+        fun nfcMapper(): NfcMapper
     }
 }

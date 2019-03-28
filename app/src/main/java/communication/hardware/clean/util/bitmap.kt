@@ -2,6 +2,7 @@ package communication.hardware.clean.util
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Matrix
 import android.net.Uri
 import android.provider.MediaStore
 import android.util.Base64
@@ -29,15 +30,25 @@ fun Bitmap.toByteArray(): ByteArray {
 }
 
 fun Bitmap.save(path: String, name: String = "${UUID.randomUUID()}.jpg"): Uri =
-        Uri.parse(File(path, name).apply {
-            FileOutputStream(this).run {
-                compress(Bitmap.CompressFormat.JPEG, 100, this)
-                flush()
-                close()
-            }
-        }.absolutePath)
+    Uri.parse(File(path, name).apply {
+        FileOutputStream(this).run {
+            compress(Bitmap.CompressFormat.JPEG, 100, this)
+            flush()
+            close()
+        }
+    }.absolutePath)
 
 fun Bitmap.scale(width: Int, height: Int): Bitmap = Bitmap.createScaledBitmap(this, width, height, false)
 fun Bitmap.create(x: Int, y: Int, width: Int, height: Int): Bitmap = Bitmap.createBitmap(this, x, y, width, height)
 
-fun Bitmap.saveInGallery(context: Context): Uri = Uri.parse(MediaStore.Images.Media.insertImage(context.contentResolver, this, "${UUID.randomUUID()}.jpg", "Electronic Identification"))
+fun Bitmap.rotate(degress: Float): Bitmap =
+    Bitmap.createBitmap(this, 0, 0, width, height, Matrix().apply { postRotate(degress) }, true)
+
+fun Bitmap.saveInGallery(context: Context): Uri = Uri.parse(
+    MediaStore.Images.Media.insertImage(
+        context.contentResolver,
+        this,
+        "${UUID.randomUUID()}.jpg",
+        "Electronic Identification"
+    )
+)
