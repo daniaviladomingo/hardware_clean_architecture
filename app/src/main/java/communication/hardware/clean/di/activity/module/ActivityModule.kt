@@ -31,3 +31,4 @@ class ActivityModule(private val daggerActivity: DaggerActivity) {
     @ActivityScope
     fun provideFragmentManager(): FragmentManager = daggerActivity.supportFragmentManager
 }
+

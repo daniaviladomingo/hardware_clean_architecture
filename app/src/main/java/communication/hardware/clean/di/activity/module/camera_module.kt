@@ -4,10 +4,11 @@ import android.view.SurfaceView
 import android.view.ViewGroup
 import communication.hardware.clean.device.camera.CameraId
 import communication.hardware.clean.device.camera.CameraImp
+import communication.hardware.clean.di.activity.FrontCamera
 import communication.hardware.clean.domain.camera.ICamera
 import org.koin.dsl.module
 
-val cameraModule = module {
+val cameraModule = module(override = true) {
 //    @Provides
 //    @ActivityScope
 //    fun provideCamera(
@@ -31,12 +32,12 @@ val cameraModule = module {
         CameraImp(
             get(),
             get(),
-            get(),
+            get(FrontCamera),
             get()
         )
     }
 
-    factory { CameraId.BACK }
+    factory(FrontCamera) { CameraId.BACK }
 
     factory {
         SurfaceView(get()).apply {

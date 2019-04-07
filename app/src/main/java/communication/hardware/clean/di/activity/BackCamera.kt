@@ -1,4 +1,4 @@
-package communication.hardware.clean.di.application
+package communication.hardware.clean.di.activity
 
 import javax.inject.Qualifier
 
