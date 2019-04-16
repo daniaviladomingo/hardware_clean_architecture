@@ -1,7 +1,6 @@
 package communication.hardware.clean.base
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
@@ -24,7 +23,6 @@ abstract class BaseActivity : AppCompatActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        Log.d("ccc", "onCreateActivity $this")
         fakeInject.apply {  }
 
         if (getLayoutId() == 0) {

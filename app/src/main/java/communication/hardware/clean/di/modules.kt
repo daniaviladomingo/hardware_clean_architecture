@@ -6,7 +6,6 @@ import android.content.Context
 import android.hardware.SensorManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import android.util.Log
 import android.view.SurfaceView
 import android.view.ViewGroup
 import androidx.appcompat.app.AppCompatActivity
@@ -49,9 +48,7 @@ val appModule = module {
 
 val activityModule = module {
     lateinit var activityReference: AppCompatActivity
-    factory { (activity: AppCompatActivity) -> activityReference = activity.apply {
-        Log.d("ccc", "$this")
-    } }
+    factory { (activity: AppCompatActivity) -> activityReference = activity}
     factory { activityReference.lifecycle }
     factory<Context>(ForActivity) { activityReference }
     factory<Activity> { activityReference }
