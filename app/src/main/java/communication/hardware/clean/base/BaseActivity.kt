@@ -1,34 +1,35 @@
 package communication.hardware.clean.base
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.view.View.GONE
 import android.view.View.VISIBLE
 import android.view.ViewGroup.LayoutParams.MATCH_PARENT
 import android.widget.FrameLayout
 import android.widget.LinearLayout
-import androidx.lifecycle.ViewModelProvider
+import androidx.appcompat.app.AppCompatActivity
 import communication.hardware.clean.R
-import communication.hardware.clean.di.activity.DaggerActivity
 import communication.hardware.clean.ui.data.ResourceState
 import kotlinx.android.synthetic.main.activity_base.*
 import kotlinx.android.synthetic.main.view_error.*
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.core.parameter.parametersOf
 
-abstract class BaseActivity : DaggerActivity() {
+abstract class BaseActivity : AppCompatActivity() {
 
-    @Inject
-    protected lateinit var viewModelFactory: ViewModelProvider.Factory
+    private val fakeInject: Unit by inject { parametersOf(this) }
 
     private lateinit var activityView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        Log.d("ccc", "onCreateActivity $this")
+        fakeInject.apply {  }
 
         if (getLayoutId() == 0) {
             throw RuntimeException("Invalid Layout ID")
         }
-
 
         setContentView(R.layout.activity_base)
 

@@ -2,37 +2,33 @@ package communication.hardware.clean.ui
 
 import android.Manifest
 import android.os.Bundle
+import android.util.Log
 import android.view.SurfaceView
 import androidx.lifecycle.Observer
-import androidx.lifecycle.ViewModelProviders
 import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
 import communication.hardware.clean.device.util.hasNFCFeature
 import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.device.util.requestPermission
 import communication.hardware.clean.device.util.toast
-import communication.hardware.clean.di.activity.ActivityComponent
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.ui.data.ResourceState
 import communication.hardware.clean.util.isPermissionsGranted
-import communication.hardware.clean.util.log
 import communication.hardware.clean.util.rotate
 import communication.hardware.clean.util.toBitmap
 import kotlinx.android.synthetic.main.activity_main.*
-import javax.inject.Inject
+import org.koin.android.ext.android.inject
+import org.koin.android.viewmodel.ext.android.viewModel
 
 class MainActivity : BaseActivity() {
     private val REQUEST_PERMISSIONS_CODE = 1
 
-    @Inject
-    protected lateinit var surfaceView: SurfaceView
+    protected val surfaceView: SurfaceView by inject()
 
-    private lateinit var mainActivityViewModel: MainActivityViewModel
+    private val mainActivityViewModel: MainActivityViewModel by viewModel()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-
-        mainActivityViewModel = ViewModelProviders.of(this, viewModelFactory).get(MainActivityViewModel::class.java)
 
         setListener()
 
@@ -70,6 +66,7 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
+        Log.d("ccc", "onResume SurfaceView: $surfaceView")
         surface_view.addView(surfaceView)
         if (!isPermissionGranted(listOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECEIVE_SMS))) {
             requestPermission(listOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECEIVE_SMS), REQUEST_PERMISSIONS_CODE)
@@ -78,6 +75,7 @@ class MainActivity : BaseActivity() {
 
     override fun onPause() {
         super.onPause()
+        Log.d("ccc", "onPause SurfaceView: $surfaceView")
         surface_view.removeView(surfaceView)
     }
 
@@ -157,8 +155,4 @@ class MainActivity : BaseActivity() {
     override fun checkAgain(): () -> Unit = {}
 
     override fun tryAgain(): () -> Unit = {}
-
-    override fun inject(activityComponent: ActivityComponent) {
-        activityComponent.inject(this)
-    }
 }

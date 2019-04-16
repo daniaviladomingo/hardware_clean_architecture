@@ -2,4 +2,4 @@ package communication.hardware.clean.di.qualifiers
 
 import org.koin.core.qualifier.Qualifier
 
-object DateFormat : Qualifier
+object FastInterval : Qualifier
