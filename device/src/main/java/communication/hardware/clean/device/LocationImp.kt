@@ -6,8 +6,8 @@ import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
 import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
 import androidx.lifecycle.OnLifecycleEvent
+import avila.domingo.lifecycle.ILifecycleObserver
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
@@ -22,12 +22,11 @@ import io.reactivex.Single
 
 class LocationImp(
     private val context: Context,
-    lifecycle: Lifecycle,
     private val interval: Long,
     private val fastestInterval: Long,
     private val priority: Int,
     private val minAccuracy: Int
-) : ILocation, LifecycleObserver {
+) : ILocation, ILifecycleObserver {
 
     private var locating = false
     private var initLocating = false
@@ -46,7 +45,6 @@ class LocationImp(
         if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
             throw IllegalHardwareException("Device hasn't LOCATION feature")
         }
-        lifecycle.addObserver(this)
     }
 
     private val locationCallback = object : LocationCallback() {
@@ -63,16 +61,18 @@ class LocationImp(
         }
     }
 
-    @SuppressLint("MissingPermission")
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
     @Synchronized
-    fun start() {
+    override fun resume() {
         if (!locating && initLocating) {
             if (!context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
                 throw IllegalAccessError("${Manifest.permission.ACCESS_FINE_LOCATION} do not granted")
             }
             handler.post {
-                FusedLocationProviderClient(context).requestLocationUpdates(locationRequest, locationCallback, null)
+                FusedLocationProviderClient(context).requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    null
+                )
             }
             locating = true
         }
@@ -80,7 +80,7 @@ class LocationImp(
 
     @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
     @Synchronized
-    fun stop() {
+    override fun pause() {
         if (locating) {
             FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
             locating = false
@@ -90,9 +90,9 @@ class LocationImp(
     @SuppressLint("MissingPermission")
     override fun getLocation(): Single<Location> = Single.create { emitter ->
         initLocating = true
-        start()
+        resume()
         rxPipe = { location ->
-            stop()
+            pause()
             emitter.onSuccess(location)
         }
     }
@@ -100,13 +100,13 @@ class LocationImp(
     @SuppressLint("MissingPermission")
     override fun getLocations(): Observable<Location> = Observable.create { emitter ->
         initLocating = true
-        start()
+        resume()
         rxPipe = { location ->
             emitter.onNext(location)
         }
     }
 
     override fun stopLocations(): Completable = Completable.create {
-        stop()
+        pause()
     }
 }

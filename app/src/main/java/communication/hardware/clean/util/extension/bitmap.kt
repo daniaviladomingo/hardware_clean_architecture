@@ -1,4 +1,4 @@
-package communication.hardware.clean.util
+package communication.hardware.clean.util.extension
 
 import android.content.Context
 import android.graphics.Bitmap

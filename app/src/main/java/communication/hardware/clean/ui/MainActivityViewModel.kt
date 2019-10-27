@@ -1,8 +1,8 @@
 package communication.hardware.clean.ui
 
+import android.graphics.Bitmap
 import communication.hardware.clean.SingleLiveEvent
 import communication.hardware.clean.base.BaseViewModel
-import communication.hardware.clean.domain.camera.model.Picture
 import communication.hardware.clean.domain.interactor.ReadNfcUseCase
 import communication.hardware.clean.domain.interactor.ShakingUseCase
 import communication.hardware.clean.domain.interactor.TakePictureUseCase
@@ -14,6 +14,7 @@ import communication.hardware.clean.domain.interactor.sms.SendSmsUseCase
 import communication.hardware.clean.domain.location.model.Location
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.model.mapper.NfcMapper
+import communication.hardware.clean.model.mapper.PictureMapper
 import communication.hardware.clean.model.mapper.ShakeMapper
 import communication.hardware.clean.schedulers.IScheduleProvider
 import communication.hardware.clean.ui.data.Resource
@@ -29,13 +30,14 @@ class MainActivityViewModel(
     private val readNfcUseCase: ReadNfcUseCase,
     private val scheduleProvider: IScheduleProvider,
     private val shakeMapper: ShakeMapper,
-    private val nfcMapper: NfcMapper
+    private val nfcMapper: NfcMapper,
+    private val pictureMapper: PictureMapper
 ) : BaseViewModel() {
 
     val locationUseCaseLiveData = SingleLiveEvent<Resource<Location>>()
     val smsUseCaseLiveData = SingleLiveEvent<Resource<Sms>>()
     val shakeLiveData = SingleLiveEvent<Resource<String>>()
-    var takePictureLiveData = SingleLiveEvent<Resource<Picture>>()
+    var takePictureLiveData = SingleLiveEvent<Resource<Bitmap>>()
     var readNfcTagLiveData = SingleLiveEvent<Resource<String>>()
 
     fun getLocation() {
@@ -108,7 +110,7 @@ class MainActivityViewModel(
         takePictureLiveData.value = Resource.loading()
         addDisposable(takePictureUseCase.execute()
             .subscribe({ picture ->
-                takePictureLiveData.value = Resource.success(picture)
+                takePictureLiveData.value = Resource.success(pictureMapper.map(picture))
             }) {
                 takePictureLiveData.value = Resource.error(it.localizedMessage)
             })

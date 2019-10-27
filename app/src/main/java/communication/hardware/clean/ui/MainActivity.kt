@@ -2,26 +2,26 @@ package communication.hardware.clean.ui
 
 import android.Manifest
 import android.os.Bundle
-import android.util.Log
 import android.view.SurfaceView
 import androidx.lifecycle.Observer
 import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
 import communication.hardware.clean.device.util.hasNFCFeature
 import communication.hardware.clean.device.util.isPermissionGranted
-import communication.hardware.clean.device.util.requestPermission
 import communication.hardware.clean.device.util.toast
 import communication.hardware.clean.domain.sms.model.Sms
 import communication.hardware.clean.ui.data.ResourceState
-import communication.hardware.clean.util.isPermissionsGranted
-import communication.hardware.clean.util.rotate
-import communication.hardware.clean.util.toBitmap
+import communication.hardware.clean.util.extension.isPermissionsGranted
+import communication.hardware.clean.util.extension.requestPermission
 import kotlinx.android.synthetic.main.activity_main.*
 import org.koin.android.ext.android.inject
 import org.koin.android.viewmodel.ext.android.viewModel
+import org.koin.core.parameter.parametersOf
 
 class MainActivity : BaseActivity() {
     private val REQUEST_PERMISSIONS_CODE = 1
+
+    private val lifecycleObserver: Unit by inject { parametersOf(this) }
 
     protected val surfaceView: SurfaceView by inject()
 
@@ -30,8 +30,29 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        setListener()
+        lifecycleObserver.run {  }
 
+        if (!isPermissionGranted(
+                listOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.RECEIVE_SMS
+                )
+            )
+        ) {
+            requestPermission(
+                listOf(
+                    Manifest.permission.CAMERA,
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.RECEIVE_SMS
+                ), REQUEST_PERMISSIONS_CODE
+            )
+        } else {
+            init()
+        }
+    }
+
+    private fun init() {
         button_take_photo.setOnClickListener {
             mainActivityViewModel.takePicture()
         }
@@ -49,7 +70,12 @@ class MainActivity : BaseActivity() {
         }
 
         button_send_sms.setOnClickListener {
-            mainActivityViewModel.sendSms(Sms(destinationAddress.text.toString(), message.text.toString()))
+            mainActivityViewModel.sendSms(
+                Sms(
+                    destinationAddress.text.toString(),
+                    message.text.toString()
+                )
+            )
         }
 
         button_read_sms.setOnClickListener {
@@ -57,6 +83,7 @@ class MainActivity : BaseActivity() {
         }
 
         mainActivityViewModel.isShaking()
+
         if (hasNFCFeature()) {
             mainActivityViewModel.readNfcTag()
         } else {
@@ -66,16 +93,12 @@ class MainActivity : BaseActivity() {
 
     override fun onResume() {
         super.onResume()
-        Log.d("ccc", "onResume SurfaceView: $surfaceView")
         surface_view.addView(surfaceView)
-        if (!isPermissionGranted(listOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECEIVE_SMS))) {
-            requestPermission(listOf(Manifest.permission.CAMERA, Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.RECEIVE_SMS), REQUEST_PERMISSIONS_CODE)
-        }
+
     }
 
     override fun onPause() {
         super.onPause()
-        Log.d("ccc", "onPause SurfaceView: $surfaceView")
         surface_view.removeView(surfaceView)
     }
 
@@ -86,7 +109,12 @@ class MainActivity : BaseActivity() {
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
                         location_result.text =
-                            String.format("(lat: %.6f, lon: %.6f, acc: %.2f)", this.latitude, this.longitude, this.accuracy)
+                            String.format(
+                                "(lat: %.6f, lon: %.6f, acc: %.2f)",
+                                this.latitude,
+                                this.longitude,
+                                this.accuracy
+                            )
                     }
                 }
             }
@@ -120,7 +148,7 @@ class MainActivity : BaseActivity() {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
-                        image_picture.setImageBitmap(picture.toBitmap().rotate(degrees.toFloat()))
+                        image_picture.setImageBitmap(this)
                     }
                 }
             }
@@ -139,12 +167,18 @@ class MainActivity : BaseActivity() {
         })
     }
 
-    override fun onRequestPermissionsResult(requestCode: Int, permissions: Array<out String>, grantResults: IntArray) {
+    override fun onRequestPermissionsResult(
+        requestCode: Int,
+        permissions: Array<out String>,
+        grantResults: IntArray
+    ) {
         super.onRequestPermissionsResult(requestCode, permissions, grantResults)
         when (requestCode) {
             REQUEST_PERMISSIONS_CODE -> {
                 if (!grantResults.isPermissionsGranted()) {
                     finish()
+                } else {
+                    init()
                 }
             }
         }
