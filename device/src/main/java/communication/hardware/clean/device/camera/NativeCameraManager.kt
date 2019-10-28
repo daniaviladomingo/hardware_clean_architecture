@@ -53,7 +53,7 @@ class NativeCameraManager(
         ) {
             throw IllegalHardwareException("Device hasn't CAMERA feature")
         }
-        if (context.isPermissionGranted(Manifest.permission.CAMERA)) {
+        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
             throw IllegalAccessError("${Manifest.permission.CAMERA} permission not granted")
         }
     }

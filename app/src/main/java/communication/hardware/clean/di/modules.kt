@@ -1,11 +1,14 @@
 package communication.hardware.clean.di
 
 import android.annotation.SuppressLint
+import android.app.Activity
+import android.content.Context
 import android.hardware.SensorManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import android.view.SurfaceView
 import android.view.ViewGroup
+import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import avila.domingo.lifecycle.ILifecycleObserver
 import avila.domingo.lifecycle.LifecycleManager
@@ -39,11 +42,16 @@ import communication.hardware.clean.schedulers.ScheduleProviderImp
 import communication.hardware.clean.ui.MainActivityViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
+import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import java.text.SimpleDateFormat
 import java.util.*
 import java.util.concurrent.TimeUnit
+
+val appModule = module {
+    single { androidContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager }
+}
 
 val activityModule = module {
     lateinit var referenceActivity: AppCompatActivity
@@ -55,7 +63,7 @@ val activityModule = module {
         )
         Unit
     }
-    factory { referenceActivity }
+    factory<Activity> { referenceActivity }
 }
 
 val viewModelModule = module {
