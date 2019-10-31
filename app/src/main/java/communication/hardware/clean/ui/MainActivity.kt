@@ -30,8 +30,6 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        lifecycleObserver.run {  }
-
         if (!isPermissionGranted(
                 listOf(
                     Manifest.permission.CAMERA,
@@ -53,6 +51,9 @@ class MainActivity : BaseActivity() {
     }
 
     private fun init() {
+        lifecycleObserver.run {  }
+        setListener()
+
         button_take_photo.setOnClickListener {
             mainActivityViewModel.takePicture()
         }

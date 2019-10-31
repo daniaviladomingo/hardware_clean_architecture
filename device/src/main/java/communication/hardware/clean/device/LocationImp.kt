@@ -41,11 +41,11 @@ class LocationImp(
         priority = this@LocationImp.priority
     }
 
-    init {
-        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
-            throw IllegalHardwareException("Device hasn't LOCATION feature")
-        }
-    }
+//    init {
+//        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
+//            throw IllegalHardwareException("Device hasn't LOCATION feature")
+//        }
+//    }
 
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {

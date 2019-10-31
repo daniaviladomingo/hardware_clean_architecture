@@ -7,8 +7,7 @@ import communication.hardware.clean.domain.camera.model.Picture
 import io.reactivex.Single
 
 class CameraImp(
-    private val nativeCamera: INativeCamera,
-    private val cameraRotationUtil: CameraRotationUtil
+    private val nativeCamera: INativeCamera
 ) : ICamera {
     override fun takePicture(): Single<Picture> = Single.create {
         nativeCamera.camera().takePicture(null, null, null, { data, camera ->
@@ -19,7 +18,7 @@ class CameraImp(
                     data,
                     pictureSize.width,
                     pictureSize.height,
-                    cameraRotationUtil.rotationDegrees()
+                    nativeCamera.rotationDegrees()
                 )
             )
         })

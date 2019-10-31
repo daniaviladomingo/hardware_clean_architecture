@@ -52,9 +52,9 @@ class SmsImp(
     }
 
     override fun sendSms(sms: Sms): Completable = Completable.create {
-        if (!context.isPermissionGranted(Manifest.permission.SEND_SMS)) {
-            throw IllegalAccessError("${Manifest.permission.SEND_SMS} do not granted")
-        }
+//        if (!context.isPermissionGranted(Manifest.permission.SEND_SMS)) {
+//            throw IllegalAccessError("${Manifest.permission.SEND_SMS} do not granted")
+//        }
 
         if (sms.text.trim().isEmpty() || sms.destinationAddress.trim().isEmpty()) {
             it.onError(Throwable("destinationAddress & text can't be empty"))

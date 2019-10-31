@@ -2,30 +2,20 @@
 
 package communication.hardware.clean.device.camera
 
-import android.Manifest
-import android.content.Context
-import android.content.pm.PackageManager
-import android.graphics.Point
 import android.hardware.Camera
-import android.view.Surface
 import android.view.SurfaceHolder
 import android.view.SurfaceView
-import android.view.WindowManager
 import avila.domingo.lifecycle.ILifecycleObserver
-import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
-import communication.hardware.clean.device.exception.IllegalHardwareException
-import communication.hardware.clean.device.util.isPermissionGranted
-import communication.hardware.clean.domain.camera.model.CameraSide
+import communication.hardware.clean.device.camera.model.ScreenSize
 import kotlin.math.abs
 
 class NativeCameraManager(
-    context: Context,
-    private val cameraSideMapper: CameraSideMapper,
-    private val windowManager: WindowManager,
+    private val screenSize: ScreenSize,
     private val rangePicture: IntRange,
     private val surfaceView: SurfaceView,
-    private val cameraSide: CameraSide
-) : INativeCamera, ICameraSide, ILifecycleObserver {
+    private val cameraRotationUtil: CameraRotationUtil,
+    private val cameraId: Int
+) : INativeCamera, ILifecycleObserver {
 
     private lateinit var currentCamera: Camera
 
@@ -45,32 +35,32 @@ class NativeCameraManager(
         }
     }
 
-    init {
-        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
-            (cameraSide == CameraSide.FRONT && !context.packageManager.hasSystemFeature(
-                PackageManager.FEATURE_CAMERA_FRONT
-            ))
-        ) {
-            throw IllegalHardwareException("Device hasn't CAMERA feature")
-        }
-        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
-            throw IllegalAccessError("${Manifest.permission.CAMERA} permission not granted")
-        }
-    }
+//    init {
+//        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
+//            (cameraSide == CameraSide.FRONT && !context.packageManager.hasSystemFeature(
+//                PackageManager.FEATURE_CAMERA_FRONT
+//            ))
+//        ) {
+//            throw IllegalHardwareException("Device hasn't CAMERA feature")
+//        }
+//        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
+//            throw IllegalAccessError("${Manifest.permission.CAMERA} permission not granted")
+//        }
+//    }
 
     override fun camera(): Camera = currentCamera
 
-    override fun cameraSide(): CameraSide = cameraSide
+    override fun cameraId(): Int = cameraId
 
-    private fun openCamera(cameraSide: CameraSide) {
-        currentCamera = Camera.open(cameraSideMapper.map(cameraSide))
+    override fun rotationDegrees(): Int = cameraRotationUtil.rotationDegreesImage(cameraId)
+
+    private fun openCamera(cameraId: Int) {
+        currentCamera = Camera.open(cameraId)
         configure()
     }
 
     private fun configure() {
         currentCamera.run {
-
-            val screenSize = screenSize()
 
             val customParameters = parameters
             customParameters.supportedFocusModes.run {
@@ -146,43 +136,14 @@ class NativeCameraManager(
 
             parameters = customParameters
 
-            setDisplayOrientation(getCameraDisplayOrientation())
+            setDisplayOrientation(cameraRotationUtil.rotationDegreesPreview(cameraId))
         }
     }
 
-    private fun getCameraDisplayOrientation(): Int {
-        val info = Camera.CameraInfo()
-        Camera.getCameraInfo(cameraSideMapper.map(cameraSide), info)
-
-        val degrees = when (windowManager.defaultDisplay.rotation) {
-            Surface.ROTATION_0 -> 0
-            Surface.ROTATION_90 -> 90
-            Surface.ROTATION_180 -> 180
-            Surface.ROTATION_270 -> 270
-            else -> 0
-        }
-
-        return if (info.facing == Camera.CameraInfo.CAMERA_FACING_FRONT) {
-            (360 - (info.orientation + degrees) % 360) % 360  // compensate the mirror
-        } else {  // back-facing
-            (info.orientation - degrees + 360) % 360
-        }
-    }
-
-    private fun screenSize(): Size =
-        Point().apply { windowManager.defaultDisplay.getSize(this) }.let { point ->
-            if (point.x > point.y) {
-                Size(point.x, point.y)
-            } else {
-                Size(point.y, point.x)
-            }
-        }
-
-    internal data class Size(val witdh: Int, val height: Int)
 
     override fun resume() {
         surfaceView.holder.addCallback(surfaceHolderCallback)
-        openCamera(cameraSide)
+        openCamera(cameraId)
         currentCamera.setPreviewDisplay(surfaceView.holder)
         currentCamera.startPreview()
     }

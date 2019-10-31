@@ -18,9 +18,9 @@ class NfcImp(
 
     private var nfcAdapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(activity)
 
-    init {
-        nfcAdapter ?: throw IllegalHardwareException("Device hasn't NFC feature")
-    }
+//    init {
+//        nfcAdapter ?: throw IllegalHardwareException("Device hasn't NFC feature")
+//    }
 
     override fun getIdTag(): Observable<ByteArray> =
         Observable.create {
