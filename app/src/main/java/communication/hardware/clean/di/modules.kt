@@ -1,11 +1,15 @@
+@file:Suppress("DEPRECATION")
+
 package communication.hardware.clean.di
 
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
+import android.graphics.Point
 import android.hardware.SensorManager
 import android.nfc.NfcAdapter
 import android.os.Bundle
+import android.view.Display
 import android.view.SurfaceView
 import android.view.ViewGroup
 import android.view.WindowManager
@@ -17,11 +21,14 @@ import communication.hardware.clean.device.LocationImp
 import communication.hardware.clean.device.NfcImp
 import communication.hardware.clean.device.SensorImp
 import communication.hardware.clean.device.SmsImp
-import communication.hardware.clean.device.camera.*
+import communication.hardware.clean.device.camera.CameraImp
+import communication.hardware.clean.device.camera.CameraRotationUtil
+import communication.hardware.clean.device.camera.INativeCamera
+import communication.hardware.clean.device.camera.NativeCameraManager
+import communication.hardware.clean.device.camera.model.ScreenSize
 import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
 import communication.hardware.clean.di.qualifiers.*
 import communication.hardware.clean.domain.camera.ICamera
-import communication.hardware.clean.domain.camera.model.CameraSide
 import communication.hardware.clean.domain.interactor.ReadNfcUseCase
 import communication.hardware.clean.domain.interactor.ShakingUseCase
 import communication.hardware.clean.domain.interactor.TakePictureUseCase
@@ -42,7 +49,6 @@ import communication.hardware.clean.schedulers.ScheduleProviderImp
 import communication.hardware.clean.ui.MainActivityViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.dsl.bind
 import org.koin.dsl.binds
 import org.koin.dsl.module
 import java.text.SimpleDateFormat
@@ -50,7 +56,7 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 val appModule = module {
-    single { androidContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager }
+    single { (androidContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay }
 }
 
 val activityModule = module {
@@ -86,18 +92,18 @@ val viewModelModule = module {
 }
 
 val useCaseModule = module {
-    single { GetLocationUseCase(get()) }
-    single { GetLocationsUseCase(get()) }
-    single { StopLocationsUseCase(get()) }
-    single { GetSmsUseCase(get()) }
-    single { SendSmsUseCase(get()) }
+    single { GetLocationUseCase(get(Location)) }
+    single { GetLocationsUseCase(get(Location)) }
+    single { StopLocationsUseCase(get(Location)) }
+    single { GetSmsUseCase(get(Sms)) }
+    single { SendSmsUseCase(get(Sms)) }
     single { TakePictureUseCase(get()) }
-    single { ShakingUseCase(get()) }
-    single { ReadNfcUseCase(get()) }
+    single { ShakingUseCase(get(Sensor)) }
+    single { ReadNfcUseCase(get(Nfc)) }
 }
 
 val cameraModule = module {
-    single<ICamera> { CameraImp(get(), get()) }
+    single<ICamera> { CameraImp(get(Camera)) }
 
     single {
         SurfaceView(get()).apply {
@@ -115,18 +121,26 @@ val cameraModule = module {
             get(),
             get(),
             get(),
-            get(),
-            get()
+            get(CameraId)
         )
     } binds arrayOf(
-        ICameraSide::class,
         INativeCamera::class,
         ILifecycleObserver::class
     )
 
-    single { CameraRotationUtil(get(), get(Camera), get()) }
+    single { CameraRotationUtil(get()) }
 
-    single { CameraSide.BACK }
+    factory {
+        Point().apply { (get() as Display).getSize(this) }.let { point ->
+            if (point.x > point.y) {
+                ScreenSize(point.x, point.y)
+            } else {
+                ScreenSize(point.y, point.x)
+            }
+        }
+    }
+
+    single(CameraId) { android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK }
 
     single { 640..2160 }
 }

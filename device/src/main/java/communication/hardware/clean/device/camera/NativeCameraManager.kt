@@ -140,7 +140,6 @@ class NativeCameraManager(
         }
     }
 
-
     override fun resume() {
         surfaceView.holder.addCallback(surfaceHolderCallback)
         openCamera(cameraId)
