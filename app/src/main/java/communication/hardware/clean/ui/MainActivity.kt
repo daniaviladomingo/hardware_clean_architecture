@@ -79,9 +79,7 @@ class MainActivity : BaseActivity() {
             )
         }
 
-        button_read_sms.setOnClickListener {
-            mainActivityViewModel.getSms()
-        }
+        mainActivityViewModel.getSms()
 
         mainActivityViewModel.isShaking()
 

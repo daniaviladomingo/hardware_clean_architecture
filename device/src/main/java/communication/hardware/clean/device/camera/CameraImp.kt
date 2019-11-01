@@ -2,6 +2,7 @@
 
 package communication.hardware.clean.device.camera
 
+import communication.hardware.clean.device.camera.cameranative.INativeCamera
 import communication.hardware.clean.domain.camera.ICamera
 import communication.hardware.clean.domain.camera.model.Picture
 import io.reactivex.Single

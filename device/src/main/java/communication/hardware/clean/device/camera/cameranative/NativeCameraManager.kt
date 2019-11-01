@@ -1,11 +1,12 @@
 @file:Suppress("DEPRECATION")
 
-package communication.hardware.clean.device.camera
+package communication.hardware.clean.device.camera.cameranative
 
 import android.hardware.Camera
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import avila.domingo.lifecycle.ILifecycleObserver
+import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import communication.hardware.clean.device.camera.model.ScreenSize
 import kotlin.math.abs
 

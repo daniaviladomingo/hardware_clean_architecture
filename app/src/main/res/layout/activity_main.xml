@@ -1,208 +1,217 @@
 <?xml version="1.0" encoding="utf-8"?>
-<ScrollView
-        xmlns:android="http://schemas.android.com/apk/res/android"
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+        xmlns:app="http://schemas.android.com/apk/res-auto"
         xmlns:tools="http://schemas.android.com/tools"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         tools:context=".ui.MainActivity">
 
     <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
             android:layout_marginLeft="10dp"
             android:layout_marginRight="10dp"
-            android:orientation="vertical"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content">
+            android:orientation="vertical">
 
         <!-- CAMERA SENSOR MODULE -->
 
         <TextView
-                android:layout_marginTop="20dp"
                 style="@style/TitleModule"
-                android:text="Test Camera Module"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Test Camera Module" />
 
         <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="100dp">
+                android:layout_height="100dp"
+                android:orientation="horizontal">
 
             <FrameLayout
                     android:id="@+id/surface_view"
-                    android:layout_weight="1"
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    android:layout_weight="1" />
 
-            <Button
-                    android:id="@+id/button_take_photo"
-                    android:layout_marginRight="5dp"
-                    android:layout_marginLeft="5dp"
-                    android:text="Take Photo"
-                    android:layout_weight="1"
+            <LinearLayout
                     android:layout_width="0dp"
-                    android:layout_height="match_parent"/>
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="5dp"
+                    android:layout_marginRight="5dp"
+                    android:layout_weight="1"
+                    android:orientation="vertical">
+
+                <Button
+                        android:id="@+id/button_take_photo"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:text="Take Photo" />
+
+                <androidx.appcompat.widget.SwitchCompat
+                        android:layout_marginTop="10dp"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_gravity="center_horizontal"
+                        android:textOff="OFF"
+                        android:textOn="ON"
+                        android:id="@+id/switch_flash"
+                        app:showText="true" />
+            </LinearLayout>
 
             <ImageView
                     android:id="@+id/image_picture"
-                    android:scaleType="fitXY"
+                    android:layout_width="0dp"
+                    android:layout_height="match_parent"
+                    android:layout_weight="1"
                     android:background="@android:color/holo_blue_dark"
                     android:contentDescription="@null"
-                    android:layout_weight="1"
-                    android:layout_width="0dp"
-                    android:layout_height="match_parent"/>
+                    android:scaleType="fitXY" />
 
         </LinearLayout>
 
         <!-- LOCATION MODULE -->
 
         <TextView
-                android:layout_marginTop="20dp"
                 style="@style/TitleModule"
-                android:text="Test Location Module"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Test Location Module" />
 
         <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <Button
                     android:id="@+id/button_get_one_location"
-                    android:text="Get One Location"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:text="Get One Location" />
 
             <Button
                     android:id="@+id/button_get_locations"
-                    android:text="Get Locations"
                     android:layout_width="0dp"
+                    android:layout_height="wrap_content"
                     android:layout_weight="1"
-                    android:layout_height="wrap_content"/>
+                    android:text="Get Locations" />
 
         </LinearLayout>
 
         <TextView
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:textColor="@android:color/holo_blue_dark"
-                android:text="(lat: ?, lon: ?, acc: ?)"
-                android:layout_marginBottom="5dp"
                 android:id="@+id/location_result"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="5dp"
+                android:layout_marginBottom="5dp"
+                android:text="(lat: ?, lon: ?, acc: ?)"
+                android:textColor="@android:color/holo_blue_dark" />
 
         <Button
                 android:id="@+id/button_stop_locations"
-                android:text="Stop Locations"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="Stop Locations" />
 
         <!-- SENSOR MODULE -->
 
         <TextView
-                android:layout_marginTop="20dp"
                 style="@style/TitleModule"
-                android:text="Test Sensor Module"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Test Sensor Module" />
 
         <TextView
-                android:textColor="@android:color/holo_blue_dark"
-                android:gravity="center_horizontal"
-                android:text="Shake device to test !!"
                 android:id="@+id/shaked_at"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:gravity="center_horizontal"
+                android:text="Shake device to test !!"
+                android:textColor="@android:color/holo_blue_dark" />
 
         <!-- NFC SENSOR MODULE -->
 
         <TextView
-                android:layout_marginTop="20dp"
                 style="@style/TitleModule"
-                android:text="Test NFC Module"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Test NFC Module" />
 
         <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <TextView
-                    android:text="Tap NFC Tag"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:text="Tap NFC Tag" />
 
             <TextView
                     android:id="@+id/id_nfc_tag"
-                    android:textColor="@android:color/holo_blue_dark"
-                    android:text="Id NFC Tag"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1"/>
+                    android:layout_weight="1"
+                    android:text="Id NFC Tag"
+                    android:textColor="@android:color/holo_blue_dark" />
 
         </LinearLayout>
 
         <!-- SMS MODULE -->
 
         <TextView
-                android:layout_marginTop="20dp"
                 style="@style/TitleModule"
-                android:text="Test Sms Module"
                 android:layout_width="wrap_content"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:text="Test Sms Module" />
 
         <LinearLayout
-                android:orientation="horizontal"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content">
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
 
             <EditText
                     android:id="@+id/destinationAddress"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
-                    android:hint="Phone"
-                    android:inputType="phone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"/>
+                    android:layout_weight="2"
+                    android:hint="Phone"
+                    android:imeOptions="actionDone"
+                    android:inputType="phone"
+                    android:singleLine="true" />
 
             <EditText
-                    android:imeOptions="actionDone"
-                    android:singleLine="true"
                     android:id="@+id/message"
-                    android:hint="Message"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"/>
+                    android:layout_weight="4"
+                    android:hint="Message"
+                    android:imeOptions="actionDone"
+                    android:singleLine="true" />
 
         </LinearLayout>
 
         <Button
                 android:id="@+id/button_send_sms"
-                android:text="SEND SMS"
                 android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:layout_height="wrap_content"
+                android:text="SEND SMS" />
 
         <TextView
-                android:textColor="@android:color/holo_blue_dark"
+                android:id="@+id/sms_read"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
                 android:layout_marginTop="5dp"
                 android:layout_marginBottom="5dp"
-                android:id="@+id/sms_read"
                 android:gravity="center_horizontal"
-                android:text="SMS will receive"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
-
-        <Button
-                android:id="@+id/button_read_sms"
-                android:text="READ INCOMING SMS"
-                android:layout_marginBottom="20dp"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"/>
+                android:text="Listening to read SMS..."
+                android:textColor="@android:color/holo_blue_dark" />
 
     </LinearLayout>
 

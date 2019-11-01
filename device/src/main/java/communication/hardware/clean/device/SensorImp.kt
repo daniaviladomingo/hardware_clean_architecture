@@ -1,6 +1,5 @@
 package communication.hardware.clean.device
 
-import android.content.Context
 import android.hardware.Sensor
 import android.hardware.SensorEvent
 import android.hardware.SensorEventListener
@@ -11,13 +10,11 @@ import io.reactivex.Observable
 import kotlin.math.abs
 
 class SensorImp(
-    context: Context,
+    private val sensorManager: SensorManager,
     private val samplingPeriodUs: Int,
     private val shakeThreshold: Int
 ) : ISensor, ILifecycleObserver {
 
-    private val sensorManager: SensorManager =
-        context.getSystemService(Context.SENSOR_SERVICE) as SensorManager
     private val sensorAccelerometer: Sensor =
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 

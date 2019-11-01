@@ -1,9 +1,7 @@
 package communication.hardware.clean.device
 
-import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
-import android.content.pm.PackageManager
 import android.os.Handler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
@@ -12,8 +10,6 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
-import communication.hardware.clean.device.exception.IllegalHardwareException
-import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.domain.location.ILocation
 import communication.hardware.clean.domain.location.model.Location
 import io.reactivex.Completable
@@ -41,12 +37,6 @@ class LocationImp(
         priority = this@LocationImp.priority
     }
 
-//    init {
-//        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION)) {
-//            throw IllegalHardwareException("Device hasn't LOCATION feature")
-//        }
-//    }
-
     private val locationCallback = object : LocationCallback() {
         override fun onLocationResult(locationResult: LocationResult) {
             if (locationResult.lastLocation.accuracy < minAccuracy) {
@@ -58,32 +48,6 @@ class LocationImp(
                     )
                 )
             }
-        }
-    }
-
-    @Synchronized
-    override fun resume() {
-        if (!locating && initLocating) {
-            if (!context.isPermissionGranted(Manifest.permission.ACCESS_FINE_LOCATION)) {
-                throw IllegalAccessError("${Manifest.permission.ACCESS_FINE_LOCATION} do not granted")
-            }
-            handler.post {
-                FusedLocationProviderClient(context).requestLocationUpdates(
-                    locationRequest,
-                    locationCallback,
-                    null
-                )
-            }
-            locating = true
-        }
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    @Synchronized
-    override fun pause() {
-        if (locating) {
-            FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
-            locating = false
         }
     }
 
@@ -108,5 +72,28 @@ class LocationImp(
 
     override fun stopLocations(): Completable = Completable.create {
         pause()
+    }
+
+    @Synchronized
+    override fun resume() {
+        if (!locating && initLocating) {
+            locating = true
+            handler.post {
+                FusedLocationProviderClient(context).requestLocationUpdates(
+                    locationRequest,
+                    locationCallback,
+                    null
+                )
+            }
+        }
+    }
+
+    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
+    @Synchronized
+    override fun pause() {
+        if (locating) {
+            FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
+            locating = false
+        }
     }
 }

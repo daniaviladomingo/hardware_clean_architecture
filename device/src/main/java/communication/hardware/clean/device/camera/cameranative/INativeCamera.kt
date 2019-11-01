@@ -1,4 +1,4 @@
-package communication.hardware.clean.device.camera
+package communication.hardware.clean.device.camera.cameranative
 
 import android.hardware.Camera
 

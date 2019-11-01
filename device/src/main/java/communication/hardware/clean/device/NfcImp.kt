@@ -4,7 +4,6 @@ import android.app.Activity
 import android.nfc.NfcAdapter
 import android.os.Bundle
 import avila.domingo.lifecycle.ILifecycleObserver
-import communication.hardware.clean.device.exception.IllegalHardwareException
 import communication.hardware.clean.domain.nfc.INfc
 import io.reactivex.Observable
 
@@ -17,10 +16,6 @@ class NfcImp(
     private var rxBus: (ByteArray) -> Unit = {}
 
     private var nfcAdapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(activity)
-
-//    init {
-//        nfcAdapter ?: throw IllegalHardwareException("Device hasn't NFC feature")
-//    }
 
     override fun getIdTag(): Observable<ByteArray> =
         Observable.create {

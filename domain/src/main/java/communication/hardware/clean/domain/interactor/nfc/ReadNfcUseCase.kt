@@ -1,4 +1,4 @@
-package communication.hardware.clean.domain.interactor
+package communication.hardware.clean.domain.interactor.nfc
 
 import communication.hardware.clean.domain.interactor.type.ObservableUseCase
 import communication.hardware.clean.domain.nfc.INfc

@@ -1,6 +1,6 @@
 @file:Suppress("DEPRECATION")
 
-package communication.hardware.clean.device.camera
+package communication.hardware.clean.device.camera.util
 
 import android.hardware.Camera
 import android.view.Display

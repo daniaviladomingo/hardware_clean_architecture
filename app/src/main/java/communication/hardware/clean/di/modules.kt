@@ -14,7 +14,6 @@ import android.view.SurfaceView
 import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
-import avila.domingo.lifecycle.ILifecycleObserver
 import avila.domingo.lifecycle.LifecycleManager
 import com.google.android.gms.location.LocationRequest
 import communication.hardware.clean.device.LocationImp
@@ -22,14 +21,13 @@ import communication.hardware.clean.device.NfcImp
 import communication.hardware.clean.device.SensorImp
 import communication.hardware.clean.device.SmsImp
 import communication.hardware.clean.device.camera.CameraImp
-import communication.hardware.clean.device.camera.CameraRotationUtil
-import communication.hardware.clean.device.camera.INativeCamera
-import communication.hardware.clean.device.camera.NativeCameraManager
+import communication.hardware.clean.device.camera.cameranative.NativeCameraManager
 import communication.hardware.clean.device.camera.model.ScreenSize
 import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
+import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import communication.hardware.clean.di.qualifiers.*
 import communication.hardware.clean.domain.camera.ICamera
-import communication.hardware.clean.domain.interactor.ReadNfcUseCase
+import communication.hardware.clean.domain.interactor.nfc.ReadNfcUseCase
 import communication.hardware.clean.domain.interactor.ShakingUseCase
 import communication.hardware.clean.domain.interactor.TakePictureUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationUseCase
@@ -49,7 +47,6 @@ import communication.hardware.clean.schedulers.ScheduleProviderImp
 import communication.hardware.clean.ui.MainActivityViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.viewmodel.dsl.viewModel
-import org.koin.dsl.binds
 import org.koin.dsl.module
 import java.text.SimpleDateFormat
 import java.util.*
@@ -57,6 +54,7 @@ import java.util.concurrent.TimeUnit
 
 val appModule = module {
     single { (androidContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay }
+    single { (androidContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager) }
 }
 
 val activityModule = module {
@@ -123,10 +121,7 @@ val cameraModule = module {
             get(),
             get(CameraId)
         )
-    } binds arrayOf(
-        INativeCamera::class,
-        ILifecycleObserver::class
-    )
+    }
 
     single { CameraRotationUtil(get()) }
 
@@ -174,7 +169,7 @@ val nfcModule = module {
 val sensorModule = module {
     single<ISensor>(Sensor) {
         SensorImp(
-            androidContext(),
+            get(),
             get(SamplingPeriodUs),
             get(SakeThreshold)
         )
