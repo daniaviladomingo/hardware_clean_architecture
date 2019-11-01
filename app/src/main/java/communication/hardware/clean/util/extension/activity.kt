@@ -1,4 +1,4 @@
-package communication.hardware.clean.device.util
+package communication.hardware.clean.util.extension
 
 import android.app.Activity
 import androidx.core.app.ActivityCompat

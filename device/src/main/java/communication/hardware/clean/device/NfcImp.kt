@@ -3,46 +3,33 @@ package communication.hardware.clean.device
 import android.app.Activity
 import android.nfc.NfcAdapter
 import android.os.Bundle
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.LifecycleObserver
-import androidx.lifecycle.OnLifecycleEvent
+import avila.domingo.lifecycle.ILifecycleObserver
 import communication.hardware.clean.device.exception.IllegalHardwareException
 import communication.hardware.clean.domain.nfc.INfc
 import io.reactivex.Observable
 
 class NfcImp(
     private val activity: Activity,
-    lifecycle: Lifecycle,
     private val flags: Int,
     private val bundle: Bundle
-) : INfc, LifecycleObserver {
-
-    init {
-        lifecycle.addObserver(this)
-    }
+) : INfc, ILifecycleObserver {
 
     private var rxBus: (ByteArray) -> Unit = {}
 
     private var nfcAdapter: NfcAdapter? = NfcAdapter.getDefaultAdapter(activity)
 
-    override fun getIdTag(): Observable<ByteArray> {
-        if (nfcAdapter == null) {
-            throw IllegalHardwareException("Device hasn't NFC feature")
-        }
-        return Observable.create {
+//    init {
+//        nfcAdapter ?: throw IllegalHardwareException("Device hasn't NFC feature")
+//    }
+
+    override fun getIdTag(): Observable<ByteArray> =
+        Observable.create {
             rxBus = { tag ->
                 it.onNext(tag)
             }
         }
-    }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    private fun onStop() {
-        nfcAdapter?.disableReaderMode(activity)
-    }
-
-    @OnLifecycleEvent(Lifecycle.Event.ON_START)
-    private fun onStart() {
+    override fun resume() {
         nfcAdapter?.enableReaderMode(
             activity,
             { tag ->
@@ -51,5 +38,9 @@ class NfcImp(
             flags,
             bundle
         )
+    }
+
+    override fun pause() {
+        nfcAdapter?.disableReaderMode(activity)
     }
 }

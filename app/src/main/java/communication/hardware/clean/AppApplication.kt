@@ -10,7 +10,6 @@ import org.koin.core.context.startKoin
 class AppApplication : Application() {
     override fun onCreate() {
         super.onCreate()
-        Log.d("ccc", "onCreate App")
         startKoin {
             androidContext(this@AppApplication)
             androidLogger()

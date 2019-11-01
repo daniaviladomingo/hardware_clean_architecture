@@ -1,8 +1,10 @@
 package communication.hardware.clean.domain.camera.model
 
 data class Picture(
-    val picture: ByteArray,
-    val degrees: Int
+    val data: ByteArray,
+    val width: Int,
+    val height: Int,
+    val rotation: Int
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
@@ -10,15 +12,20 @@ data class Picture(
 
         other as Picture
 
-        if (!picture.contentEquals(other.picture)) return false
-        if (degrees != other.degrees) return false
+        if (!data.contentEquals(other.data)) return false
+        if (width != other.width) return false
+        if (height != other.height) return false
+        if (rotation != other.rotation) return false
 
         return true
     }
 
     override fun hashCode(): Int {
-        var result = picture.contentHashCode()
-        result = 31 * result + degrees
+        var result = data.contentHashCode()
+        result = 31 * result + width
+        result = 31 * result + height
+        result = 31 * result + rotation
         return result
     }
+
 }

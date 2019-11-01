@@ -17,13 +17,10 @@ import org.koin.core.parameter.parametersOf
 
 abstract class BaseActivity : AppCompatActivity() {
 
-    private val fakeInject: Unit by inject { parametersOf(this) }
-
     private lateinit var activityView: View
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        fakeInject.apply {  }
 
         if (getLayoutId() == 0) {
             throw RuntimeException("Invalid Layout ID")
