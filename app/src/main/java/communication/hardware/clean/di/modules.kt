@@ -25,14 +25,16 @@ import communication.hardware.clean.device.camera.cameranative.NativeCameraManag
 import communication.hardware.clean.device.camera.model.ScreenSize
 import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
 import communication.hardware.clean.device.camera.util.CameraRotationUtil
+import communication.hardware.clean.device.flash.FlashImp
 import communication.hardware.clean.di.qualifiers.*
 import communication.hardware.clean.domain.camera.ICamera
-import communication.hardware.clean.domain.interactor.nfc.ReadNfcUseCase
+import communication.hardware.clean.domain.flash.IFlash
 import communication.hardware.clean.domain.interactor.ShakingUseCase
 import communication.hardware.clean.domain.interactor.TakePictureUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationsUseCase
 import communication.hardware.clean.domain.interactor.location.StopLocationsUseCase
+import communication.hardware.clean.domain.interactor.nfc.ReadNfcUseCase
 import communication.hardware.clean.domain.interactor.sms.GetSmsUseCase
 import communication.hardware.clean.domain.interactor.sms.SendSmsUseCase
 import communication.hardware.clean.domain.location.ILocation
@@ -119,7 +121,8 @@ val cameraModule = module {
             get(),
             get(),
             get(),
-            get(CameraId)
+            get(CameraId),
+            get(FlashMode)
         )
     }
 
@@ -137,7 +140,13 @@ val cameraModule = module {
 
     single(CameraId) { android.hardware.Camera.CameraInfo.CAMERA_FACING_BACK }
 
+    single(FlashMode) { android.hardware.Camera.Parameters.FLASH_MODE_OFF }
+
     single { 640..2160 }
+}
+
+val flashModule = module {
+    single<IFlash> { FlashImp(get(), get()) }
 }
 
 val locationModule = module {

@@ -4,6 +4,7 @@ import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
 import android.content.IntentFilter
+import android.content.pm.PackageManager
 import android.os.Build
 import android.provider.Telephony
 import android.telephony.SmsManager
@@ -57,6 +58,10 @@ class SmsImp(
             smsManager.sendTextMessage(sms.destinationAddress, null, sms.text, null, null)
             it.onComplete()
         }
+    }
+
+    override fun isSupported(): Single<Boolean> = Single.create {
+        it.onSuccess(context.packageManager.hasSystemFeature(PackageManager.FEATURE_TELEPHONY))
     }
 
     override fun resume() {

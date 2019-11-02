@@ -2,6 +2,7 @@ package communication.hardware.clean.device
 
 import android.annotation.SuppressLint
 import android.content.Context
+import android.content.pm.PackageManager
 import android.os.Handler
 import androidx.lifecycle.Lifecycle
 import androidx.lifecycle.OnLifecycleEvent
@@ -68,6 +69,10 @@ class LocationImp(
         rxPipe = { location ->
             emitter.onNext(location)
         }
+    }
+
+    override fun isSupported(): Single<Boolean> = Single.create {
+        it.onSuccess(context.packageManager.hasSystemFeature(PackageManager.FEATURE_LOCATION))
     }
 
     override fun stopLocations(): Completable = Completable.create {

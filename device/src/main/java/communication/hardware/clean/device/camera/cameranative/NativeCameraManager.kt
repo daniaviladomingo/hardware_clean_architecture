@@ -15,10 +15,12 @@ class NativeCameraManager(
     private val rangePicture: IntRange,
     private val surfaceView: SurfaceView,
     private val cameraRotationUtil: CameraRotationUtil,
-    private val cameraId: Int
-) : INativeCamera, ILifecycleObserver {
+    private val cameraId: Int,
+    flashMode: String
+) : INativeCamera, INativeFlash, ILifecycleObserver {
 
     private lateinit var currentCamera: Camera
+    private var currentFlashMode = flashMode
 
     private val surfaceHolderCallback = object : SurfaceHolder.Callback {
         override fun surfaceChanged(
@@ -54,6 +56,17 @@ class NativeCameraManager(
     override fun cameraId(): Int = cameraId
 
     override fun rotationDegrees(): Int = cameraRotationUtil.rotationDegreesImage(cameraId)
+
+    override fun mode(mode: String) {
+        currentCamera.parameters = currentCamera.parameters.apply {
+            if (supportedFlashModes?.contains(mode) == true) {
+                flashMode = mode
+            }
+        }
+        currentFlashMode = mode
+    }
+
+    override fun mode(): String = currentFlashMode
 
     private fun openCamera(cameraId: Int) {
         currentCamera = Camera.open(cameraId)

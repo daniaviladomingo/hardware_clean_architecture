@@ -6,6 +6,7 @@ import android.os.Bundle
 import avila.domingo.lifecycle.ILifecycleObserver
 import communication.hardware.clean.domain.nfc.INfc
 import io.reactivex.Observable
+import io.reactivex.Single
 
 class NfcImp(
     private val activity: Activity,
@@ -23,6 +24,10 @@ class NfcImp(
                 it.onNext(tag)
             }
         }
+
+    override fun isSupported(): Single<Boolean> = Single.create {
+        it.onSuccess(nfcAdapter?.run { true } ?: false)
+    }
 
     override fun resume() {
         nfcAdapter?.enableReaderMode(

@@ -7,6 +7,7 @@ import android.hardware.SensorManager
 import avila.domingo.lifecycle.ILifecycleObserver
 import communication.hardware.clean.domain.sensor.ISensor
 import io.reactivex.Observable
+import io.reactivex.Single
 import kotlin.math.abs
 
 class SensorImp(
@@ -15,7 +16,7 @@ class SensorImp(
     private val shakeThreshold: Int
 ) : ISensor, ILifecycleObserver {
 
-    private val sensorAccelerometer: Sensor =
+    private val sensorAccelerometer: Sensor? =
         sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER)
 
     private var lastUpdate: Long = 0
@@ -58,12 +59,18 @@ class SensorImp(
         }
     }
 
+    override fun isSupported(): Single<Boolean> = Single.create {
+        it.onSuccess(sensorAccelerometer?.run { true } ?: false)
+    }
+
     override fun resume() {
-        sensorManager.registerListener(
-            accelerometerSensorListener,
-            sensorAccelerometer,
-            samplingPeriodUs
-        )
+        sensorAccelerometer?.run {
+            sensorManager.registerListener(
+                accelerometerSensorListener,
+                this,
+                samplingPeriodUs
+            )
+        }
     }
 
     override fun pause() {

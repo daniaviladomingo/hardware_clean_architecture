@@ -1,7 +1,6 @@
 package communication.hardware.clean
 
 import android.app.Application
-import android.util.Log
 import communication.hardware.clean.di.*
 import org.koin.android.ext.koin.androidContext
 import org.koin.android.ext.koin.androidLogger
@@ -19,6 +18,7 @@ class AppApplication : Application() {
                 viewModelModule,
                 useCaseModule,
                 cameraModule,
+                flashModule,
                 locationModule,
                 nfcModule,
                 sensorModule,
