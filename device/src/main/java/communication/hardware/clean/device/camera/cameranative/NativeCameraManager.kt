@@ -13,7 +13,7 @@ import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import kotlin.math.abs
 
 class NativeCameraManager(
-    private val context: Context,
+    private val packageManager: PackageManager,
     private val screenSize: ScreenSize,
     private val rangePicture: IntRange,
     private val surfaceView: SurfaceView,
@@ -41,19 +41,6 @@ class NativeCameraManager(
         }
     }
 
-//    init {
-//        if (!context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) ||
-//            (cameraSide == CameraSide.FRONT && !context.packageManager.hasSystemFeature(
-//                PackageManager.FEATURE_CAMERA_FRONT
-//            ))
-//        ) {
-//            throw IllegalHardwareException("Device hasn't CAMERA feature")
-//        }
-//        if (!context.isPermissionGranted(Manifest.permission.CAMERA)) {
-//            throw IllegalAccessError("${Manifest.permission.CAMERA} permission not granted")
-//        }
-//    }
-
     override fun camera(): Camera = currentCamera
 
     override fun cameraId(): Int = cameraId
@@ -72,8 +59,8 @@ class NativeCameraManager(
     override fun mode(): String = currentFlashMode
 
     override fun isHardwareSupported(): Boolean =
-        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
-                (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK || context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
+        packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK || packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
 
     private fun openCamera(cameraId: Int) {
         currentCamera = Camera.open(cameraId)

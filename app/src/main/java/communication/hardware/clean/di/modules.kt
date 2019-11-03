@@ -57,6 +57,7 @@ import java.util.concurrent.TimeUnit
 val appModule = module {
     single { (androidContext().getSystemService(Context.WINDOW_SERVICE) as WindowManager).defaultDisplay }
     single { (androidContext().getSystemService(Context.SENSOR_SERVICE) as SensorManager) }
+    single { androidContext().packageManager }
 }
 
 val activityModule = module {
