@@ -2,15 +2,18 @@
 
 package communication.hardware.clean.device.camera.cameranative
 
+import android.content.Context
+import android.content.pm.PackageManager
 import android.hardware.Camera
 import android.view.SurfaceHolder
 import android.view.SurfaceView
 import avila.domingo.lifecycle.ILifecycleObserver
-import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import communication.hardware.clean.device.camera.model.ScreenSize
+import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import kotlin.math.abs
 
 class NativeCameraManager(
+    private val context: Context,
     private val screenSize: ScreenSize,
     private val rangePicture: IntRange,
     private val surfaceView: SurfaceView,
@@ -67,6 +70,10 @@ class NativeCameraManager(
     }
 
     override fun mode(): String = currentFlashMode
+
+    override fun isHardwareSupported(): Boolean =
+        context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK || context.packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
 
     private fun openCamera(cameraId: Int) {
         currentCamera = Camera.open(cameraId)

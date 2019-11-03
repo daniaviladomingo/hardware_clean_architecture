@@ -1,3 +1,5 @@
+@file:Suppress("DEPRECATION")
+
 package communication.hardware.clean.device.camera.model.mapper
 
 import android.hardware.Camera
