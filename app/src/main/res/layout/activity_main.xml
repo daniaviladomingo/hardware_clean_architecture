@@ -47,15 +47,31 @@
                         android:layout_height="wrap_content"
                         android:text="Take Photo" />
 
+                <TextView
+                        android:id="@+id/camera_not_supported"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Camera not supported"
+                        android:visibility="gone" />
+
                 <androidx.appcompat.widget.SwitchCompat
-                        android:layout_marginTop="10dp"
+                        android:id="@+id/switch_flash"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_horizontal"
-                        android:textOff="OFF"
-                        android:textOn="ON"
-                        android:id="@+id/switch_flash"
+                        android:layout_marginTop="10dp"
+                        android:textOff="F OFF"
+                        android:textOn="F ON"
                         app:showText="true" />
+
+                <TextView
+                        android:id="@+id/flash_not_supported"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:gravity="center_horizontal"
+                        android:text="Flash not supported"
+                        android:visibility="gone" />
             </LinearLayout>
 
             <ImageView
@@ -78,17 +94,20 @@
                 android:layout_marginTop="20dp"
                 android:text="Test Location Module" />
 
+        <TextView
+                android:id="@+id/location_result"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginBottom="10dp"
+                android:text="(lat: ?, lon: ?, acc: ?)"
+                android:textColor="@android:color/holo_blue_dark" />
+
         <LinearLayout
+                android:id="@+id/location_button"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:orientation="horizontal">
-
-            <Button
-                    android:id="@+id/button_get_one_location"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:text="Get One Location" />
 
             <Button
                     android:id="@+id/button_get_locations"
@@ -97,23 +116,14 @@
                     android:layout_weight="1"
                     android:text="Get Locations" />
 
+            <Button
+                    android:id="@+id/button_stop_locations"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:text="Stop Locations" />
+
         </LinearLayout>
-
-        <TextView
-                android:id="@+id/location_result"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="center_horizontal"
-                android:layout_marginTop="5dp"
-                android:layout_marginBottom="5dp"
-                android:text="(lat: ?, lon: ?, acc: ?)"
-                android:textColor="@android:color/holo_blue_dark" />
-
-        <Button
-                android:id="@+id/button_stop_locations"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="Stop Locations" />
 
         <!-- SENSOR MODULE -->
 
@@ -172,36 +182,44 @@
                 android:text="Test Sms Module" />
 
         <LinearLayout
+                android:id="@+id/sms"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:orientation="horizontal">
+                android:orientation="vertical">
 
-            <EditText
-                    android:id="@+id/destinationAddress"
-                    android:layout_width="0dp"
+            <LinearLayout
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="2"
-                    android:hint="Phone"
-                    android:imeOptions="actionDone"
-                    android:inputType="phone"
-                    android:singleLine="true" />
+                    android:orientation="horizontal">
 
-            <EditText
-                    android:id="@+id/message"
-                    android:layout_width="0dp"
+                <EditText
+                        android:id="@+id/destinationAddress"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2"
+                        android:hint="Phone"
+                        android:imeOptions="actionDone"
+                        android:inputType="phone"
+                        android:singleLine="true" />
+
+                <EditText
+                        android:id="@+id/message"
+                        android:layout_width="0dp"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="4"
+                        android:hint="Message"
+                        android:imeOptions="actionDone"
+                        android:singleLine="true" />
+
+            </LinearLayout>
+
+            <Button
+                    android:id="@+id/button_send_sms"
+                    android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:layout_weight="4"
-                    android:hint="Message"
-                    android:imeOptions="actionDone"
-                    android:singleLine="true" />
+                    android:text="SEND SMS" />
 
         </LinearLayout>
-
-        <Button
-                android:id="@+id/button_send_sms"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:text="SEND SMS" />
 
         <TextView
                 android:id="@+id/sms_read"

@@ -1,10 +1,10 @@
 package communication.hardware.clean.domain.interactor.sms
 
-import communication.hardware.clean.domain.interactor.type.SingleUseCase
+import communication.hardware.clean.domain.interactor.type.ObservableUseCase
 import communication.hardware.clean.domain.sms.ISms
 import communication.hardware.clean.domain.sms.model.Sms
-import io.reactivex.Single
+import io.reactivex.Observable
 
-class GetSmsUseCase(private val sms: ISms) : SingleUseCase<Sms> {
-    override fun execute(): Single<Sms> = sms.getSms()
+class GetSmsUseCase(private val sms: ISms) : ObservableUseCase<Sms> {
+    override fun execute(): Observable<Sms> = sms.getSms()
 }

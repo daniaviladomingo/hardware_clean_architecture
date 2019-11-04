@@ -3,10 +3,11 @@ package communication.hardware.clean.ui
 import android.Manifest
 import android.os.Bundle
 import android.view.SurfaceView
+import android.view.View
+import android.view.WindowManager
 import androidx.lifecycle.Observer
 import communication.hardware.clean.R
 import communication.hardware.clean.base.BaseActivity
-import communication.hardware.clean.device.util.hasNFCFeature
 import communication.hardware.clean.device.util.isPermissionGranted
 import communication.hardware.clean.device.util.toast
 import communication.hardware.clean.domain.sms.model.Sms
@@ -30,6 +31,9 @@ class MainActivity : BaseActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
+        window.setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN)
+
+
         if (!isPermissionGranted(
                 listOf(
                     Manifest.permission.CAMERA,
@@ -51,15 +55,21 @@ class MainActivity : BaseActivity() {
     }
 
     private fun init() {
-        lifecycleObserver.run {  }
+        lifecycleObserver.run { }
+
         setListener()
+
+        mainActivityViewModel.isCameraSupported()
+        mainActivityViewModel.isLocationSupported()
+        mainActivityViewModel.isFlashSupported()
+        mainActivityViewModel.isNfcSupported()
+        mainActivityViewModel.isSensorSupported()
+        mainActivityViewModel.isSmsSupported()
+
+        mainActivityViewModel.flashMode()
 
         button_take_photo.setOnClickListener {
             mainActivityViewModel.takePicture()
-        }
-
-        button_get_one_location.setOnClickListener {
-            mainActivityViewModel.getLocation()
         }
 
         button_get_locations.setOnClickListener {
@@ -78,22 +88,11 @@ class MainActivity : BaseActivity() {
                 )
             )
         }
-
-        mainActivityViewModel.getSms()
-
-        mainActivityViewModel.isShaking()
-
-        if (hasNFCFeature()) {
-            mainActivityViewModel.readNfcTag()
-        } else {
-            id_nfc_tag.text = "Device hasn't NFC feature !!!"
-        }
     }
 
     override fun onResume() {
         super.onResume()
         surface_view.addView(surfaceView)
-
     }
 
     override fun onPause() {
@@ -119,12 +118,42 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        mainActivityViewModel.isLocationSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (!this) {
+                            location_button.visibility = View.GONE
+                            location_result.text = "Location not supported"
+                        }
+                    }
+                }
+            }
+        })
+
         mainActivityViewModel.smsUseCaseLiveData.observe(this, Observer { resource ->
             resource?.run {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
                         sms_read.text = this.text
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.isSmsSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (this) {
+                            mainActivityViewModel.getSms()
+                        } else {
+                            sms.visibility = View.GONE
+                            sms_read.text = "Sms not supported"
+                        }
                     }
                 }
             }
@@ -142,12 +171,69 @@ class MainActivity : BaseActivity() {
             }
         })
 
+        mainActivityViewModel.isSensorSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (this) {
+                            mainActivityViewModel.isShaking()
+                        } else {
+                            shaked_at.text = "Sensor not supported"
+                        }
+                    }
+                }
+            }
+        })
+
         mainActivityViewModel.takePictureLiveData.observe(this, Observer { resource ->
             resource?.run {
                 managementResourceState(status, message)
                 if (status == ResourceState.SUCCESS) {
                     data?.run {
                         image_picture.setImageBitmap(this)
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.isCameraSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (!this) {
+                            button_take_photo.visibility = View.GONE
+                            camera_not_supported.visibility = View.VISIBLE
+                        }
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.flashModeLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        switch_flash.isChecked = this
+                        switch_flash.setOnCheckedChangeListener { _, b ->
+                            mainActivityViewModel.setFlashMode(b)
+                        }
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.isFlashSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (!this) {
+                            switch_flash.visibility = View.GONE
+                            flash_not_supported.visibility = View.VISIBLE
+                        }
                     }
                 }
             }
@@ -160,6 +246,21 @@ class MainActivity : BaseActivity() {
                     data?.run {
                         toast("NFC Tag Readed !!")
                         id_nfc_tag.text = this
+                    }
+                }
+            }
+        })
+
+        mainActivityViewModel.isNfcSupportedLiveData.observe(this, Observer { resource ->
+            resource?.run {
+                managementResourceState(status, message)
+                if (status == ResourceState.SUCCESS) {
+                    data?.run {
+                        if (this) {
+                            mainActivityViewModel.readNfcTag()
+                        } else {
+                            id_nfc_tag.text = "NFC not supported"
+                        }
                     }
                 }
             }

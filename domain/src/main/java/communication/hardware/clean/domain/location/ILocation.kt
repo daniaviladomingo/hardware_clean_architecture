@@ -7,7 +7,6 @@ import io.reactivex.Observable
 import io.reactivex.Single
 
 interface ILocation : IHardwareSupported {
-    fun getLocation(): Single<Location>
     fun getLocations(): Observable<Location>
     fun stopLocations(): Completable
 }

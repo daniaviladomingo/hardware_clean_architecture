@@ -2,7 +2,6 @@
 
 package communication.hardware.clean.device.camera.cameranative
 
-import android.content.Context
 import android.content.pm.PackageManager
 import android.hardware.Camera
 import android.view.SurfaceHolder
@@ -58,9 +57,7 @@ class NativeCameraManager(
 
     override fun mode(): String = currentFlashMode
 
-    override fun isHardwareSupported(): Boolean =
-        packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
-                (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK || packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA_FRONT))
+    override fun isHardwareSupported(): Boolean = isSupportedCamera()
 
     private fun openCamera(cameraId: Int) {
         currentCamera = Camera.open(cameraId)
@@ -142,21 +139,33 @@ class NativeCameraManager(
                     }
                 }
 
+            customParameters.flashMode = currentFlashMode
+
             parameters = customParameters
 
             setDisplayOrientation(cameraRotationUtil.rotationDegreesPreview(cameraId))
         }
     }
 
+    private fun isSupportedCamera(): Boolean =
+        packageManager.hasSystemFeature(PackageManager.FEATURE_CAMERA) &&
+                (cameraId == Camera.CameraInfo.CAMERA_FACING_BACK || packageManager.hasSystemFeature(
+                    PackageManager.FEATURE_CAMERA_FRONT
+                ))
+
     override fun resume() {
-        surfaceView.holder.addCallback(surfaceHolderCallback)
-        openCamera(cameraId)
-        currentCamera.setPreviewDisplay(surfaceView.holder)
-        currentCamera.startPreview()
+        if (isSupportedCamera()) {
+            surfaceView.holder.addCallback(surfaceHolderCallback)
+            openCamera(cameraId)
+            currentCamera.setPreviewDisplay(surfaceView.holder)
+            currentCamera.startPreview()
+        }
     }
 
     override fun pause() {
-        surfaceView.holder.removeCallback(surfaceHolderCallback)
-        currentCamera.stopPreview()
+        if (isSupportedCamera()) {
+            surfaceView.holder.removeCallback(surfaceHolderCallback)
+            currentCamera.stopPreview()
+        }
     }
 }

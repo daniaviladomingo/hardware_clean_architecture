@@ -4,8 +4,6 @@ import android.annotation.SuppressLint
 import android.content.Context
 import android.content.pm.PackageManager
 import android.os.Handler
-import androidx.lifecycle.Lifecycle
-import androidx.lifecycle.OnLifecycleEvent
 import avila.domingo.lifecycle.ILifecycleObserver
 import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
@@ -25,7 +23,6 @@ class LocationImp(
     private val minAccuracy: Int
 ) : ILocation, ILifecycleObserver {
 
-    private var locating = false
     private var initLocating = false
 
     private var rxPipe: (Location) -> Unit = {}
@@ -53,21 +50,13 @@ class LocationImp(
     }
 
     @SuppressLint("MissingPermission")
-    override fun getLocation(): Single<Location> = Single.create { emitter ->
-        initLocating = true
-        resume()
-        rxPipe = { location ->
-            pause()
-            emitter.onSuccess(location)
-        }
-    }
-
-    @SuppressLint("MissingPermission")
     override fun getLocations(): Observable<Location> = Observable.create { emitter ->
-        initLocating = true
-        resume()
-        rxPipe = { location ->
-            emitter.onNext(location)
+        if (!initLocating) {
+            initLocating = true
+            init()
+            rxPipe = { location ->
+                emitter.onNext(location)
+            }
         }
     }
 
@@ -76,13 +65,12 @@ class LocationImp(
     }
 
     override fun stopLocations(): Completable = Completable.create {
-        pause()
+        stop()
+        initLocating = false
     }
 
-    @Synchronized
-    override fun resume() {
-        if (!locating && initLocating) {
-            locating = true
+    private fun init(){
+        if (initLocating) {
             handler.post {
                 FusedLocationProviderClient(context).requestLocationUpdates(
                     locationRequest,
@@ -93,12 +81,17 @@ class LocationImp(
         }
     }
 
-    @OnLifecycleEvent(Lifecycle.Event.ON_STOP)
-    @Synchronized
-    override fun pause() {
-        if (locating) {
+    private fun stop(){
+        if (initLocating) {
             FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
-            locating = false
         }
+    }
+
+    override fun resume() {
+        init()
+    }
+
+    override fun pause() {
+        stop()
     }
 }

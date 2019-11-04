@@ -13,6 +13,7 @@ import avila.domingo.lifecycle.ILifecycleObserver
 import communication.hardware.clean.domain.sms.ISms
 import communication.hardware.clean.domain.sms.model.Sms
 import io.reactivex.Completable
+import io.reactivex.Observable
 import io.reactivex.Single
 
 class SmsImp(
@@ -45,9 +46,9 @@ class SmsImp(
         }
     }
 
-    override fun getSms(): Single<Sms> = Single.create {
+    override fun getSms(): Observable<Sms> = Observable.create {
         incomingSmsBroadcastaReceiver.smsListener = { sms ->
-            it.onSuccess(sms)
+            it.onNext(sms)
         }
     }
 

@@ -26,12 +26,16 @@ import communication.hardware.clean.device.camera.model.ScreenSize
 import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
 import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import communication.hardware.clean.device.flash.FlashImp
+import communication.hardware.clean.device.flash.model.mapper.FlashModeMapper
 import communication.hardware.clean.di.qualifiers.*
+import communication.hardware.clean.di.qualifiers.supported.*
 import communication.hardware.clean.domain.camera.ICamera
 import communication.hardware.clean.domain.flash.IFlash
+import communication.hardware.clean.domain.interactor.IsHardwareSupportedUseCase
 import communication.hardware.clean.domain.interactor.ShakingUseCase
 import communication.hardware.clean.domain.interactor.TakePictureUseCase
-import communication.hardware.clean.domain.interactor.location.GetLocationUseCase
+import communication.hardware.clean.domain.interactor.flash.GetFlashModeUseCase
+import communication.hardware.clean.domain.interactor.flash.SetFlashModeUseCase
 import communication.hardware.clean.domain.interactor.location.GetLocationsUseCase
 import communication.hardware.clean.domain.interactor.location.StopLocationsUseCase
 import communication.hardware.clean.domain.interactor.nfc.ReadNfcUseCase
@@ -44,6 +48,7 @@ import communication.hardware.clean.domain.sms.ISms
 import communication.hardware.clean.model.mapper.NfcMapper
 import communication.hardware.clean.model.mapper.PictureMapper
 import communication.hardware.clean.model.mapper.ShakeMapper
+import communication.hardware.clean.model.mapper.UiFlashModeMapper
 import communication.hardware.clean.schedulers.IScheduleProvider
 import communication.hardware.clean.schedulers.ScheduleProviderImp
 import communication.hardware.clean.ui.MainActivityViewModel
@@ -65,7 +70,7 @@ val activityModule = module {
     factory { (activity: AppCompatActivity) ->
         referenceActivity = activity
         LifecycleManager(
-            arrayOf(get(Camera), get(Location), get(Nfc), get(Sms), get(Sensor)),
+            arrayOf(get(NativeCamera), get(Location), get(Nfc), get(Sms), get(Sensor)),
             activity.lifecycle
         )
         Unit
@@ -78,11 +83,19 @@ val viewModelModule = module {
         MainActivityViewModel(
             get(),
             get(),
+            get(SupportedLocation),
             get(),
             get(),
+            get(SupportedSms),
+            get(),
+            get(SupportedSensor),
+            get(),
+            get(SupportedCamera),
             get(),
             get(),
+            get(SupportedFlash),
             get(),
+            get(SupportedNfc),
             get(),
             get(),
             get(),
@@ -93,18 +106,30 @@ val viewModelModule = module {
 }
 
 val useCaseModule = module {
-    single { GetLocationUseCase(get(Location)) }
     single { GetLocationsUseCase(get(Location)) }
     single { StopLocationsUseCase(get(Location)) }
+    single(SupportedLocation) { IsHardwareSupportedUseCase(get(Location)) }
+
     single { GetSmsUseCase(get(Sms)) }
     single { SendSmsUseCase(get(Sms)) }
-    single { TakePictureUseCase(get()) }
+    single(SupportedSms) { IsHardwareSupportedUseCase(get(Sms)) }
+
+    single { TakePictureUseCase(get(Camera)) }
+    single(SupportedCamera) { IsHardwareSupportedUseCase(get(Camera)) }
+
+    single { SetFlashModeUseCase(get(Flash)) }
+    single { GetFlashModeUseCase(get(Flash)) }
+    single(SupportedFlash) { IsHardwareSupportedUseCase(get(Flash)) }
+
     single { ShakingUseCase(get(Sensor)) }
+    single(SupportedSensor) { IsHardwareSupportedUseCase(get(Sensor)) }
+
     single { ReadNfcUseCase(get(Nfc)) }
+    single(SupportedNfc) { IsHardwareSupportedUseCase(get(Nfc)) }
 }
 
 val cameraModule = module {
-    single<ICamera> { CameraImp(get(Camera)) }
+    single<ICamera>(Camera) { CameraImp(get(NativeCamera)) }
 
     single {
         SurfaceView(get()).apply {
@@ -116,8 +141,9 @@ val cameraModule = module {
         }
     }
 
-    single(Camera) {
+    single(NativeCamera) {
         NativeCameraManager(
+            get(),
             get(),
             get(),
             get(),
@@ -147,7 +173,7 @@ val cameraModule = module {
 }
 
 val flashModule = module {
-    single<IFlash> { FlashImp(get(), get()) }
+    single<IFlash>(Flash) { FlashImp(get(), get(NativeCamera), get()) }
 }
 
 val locationModule = module {
@@ -199,6 +225,8 @@ val mapperModule = module {
     single { SimpleDateFormat(get(), Locale.getDefault()) }
     single { PictureMapper() }
     single { CameraSideMapper() }
+    single { UiFlashModeMapper() }
+    single { FlashModeMapper() }
     single { "HH:mm:ss" }
 }
 
