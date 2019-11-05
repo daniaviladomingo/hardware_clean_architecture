@@ -4,8 +4,6 @@ apply plugin: 'kotlin-android'
 android {
     compileSdkVersion 29
 
-
-
     defaultConfig {
         minSdkVersion 19
         targetSdkVersion 29
@@ -29,11 +27,9 @@ dependencies {
     implementation project(':domain')
     implementation project(':lifecycle')
 
-    implementation fileTree(include: ['*.jar'], dir: 'libs')
-
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:$kotlin_version"
 
-    api 'com.google.android.gms:play-services-location:17.0.0'
+    implementation 'com.google.android.gms:play-services-location:17.0.0'
     implementation 'io.reactivex.rxjava2:rxjava:2.2.5'
 
     testImplementation 'junit:junit:4.12'

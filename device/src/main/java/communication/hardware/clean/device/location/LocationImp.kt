@@ -1,4 +1,4 @@
-package communication.hardware.clean.device
+package communication.hardware.clean.device.location
 
 import android.annotation.SuppressLint
 import android.content.Context
@@ -9,6 +9,8 @@ import com.google.android.gms.location.FusedLocationProviderClient
 import com.google.android.gms.location.LocationCallback
 import com.google.android.gms.location.LocationRequest
 import com.google.android.gms.location.LocationResult
+import communication.hardware.clean.device.location.mode.Accuracy
+import communication.hardware.clean.device.location.mode.mapper.AccuracyMapper
 import communication.hardware.clean.domain.location.ILocation
 import communication.hardware.clean.domain.location.model.Location
 import io.reactivex.Completable
@@ -19,8 +21,9 @@ class LocationImp(
     private val context: Context,
     private val interval: Long,
     private val fastestInterval: Long,
-    private val priority: Int,
-    private val minAccuracy: Int
+    private val priority: Accuracy,
+    private val minAccuracy: Int,
+    private val accuracyMapper: AccuracyMapper
 ) : ILocation, ILifecycleObserver {
 
     private var initLocating = false
@@ -32,7 +35,7 @@ class LocationImp(
     private val locationRequest = LocationRequest().apply {
         interval = this@LocationImp.interval
         fastestInterval = this@LocationImp.fastestInterval
-        priority = this@LocationImp.priority
+        priority = accuracyMapper.map(this@LocationImp.priority)
     }
 
     private val locationCallback = object : LocationCallback() {
@@ -69,7 +72,7 @@ class LocationImp(
         initLocating = false
     }
 
-    private fun init(){
+    private fun init() {
         if (initLocating) {
             handler.post {
                 FusedLocationProviderClient(context).requestLocationUpdates(
@@ -81,7 +84,7 @@ class LocationImp(
         }
     }
 
-    private fun stop(){
+    private fun stop() {
         if (initLocating) {
             FusedLocationProviderClient(context).removeLocationUpdates(locationCallback)
         }

@@ -15,8 +15,6 @@ import android.view.ViewGroup
 import android.view.WindowManager
 import androidx.appcompat.app.AppCompatActivity
 import avila.domingo.lifecycle.LifecycleManager
-import com.google.android.gms.location.LocationRequest
-import communication.hardware.clean.device.LocationImp
 import communication.hardware.clean.device.NfcImp
 import communication.hardware.clean.device.SensorImp
 import communication.hardware.clean.device.SmsImp
@@ -27,6 +25,9 @@ import communication.hardware.clean.device.camera.model.mapper.CameraSideMapper
 import communication.hardware.clean.device.camera.util.CameraRotationUtil
 import communication.hardware.clean.device.flash.FlashImp
 import communication.hardware.clean.device.flash.model.mapper.FlashModeMapper
+import communication.hardware.clean.device.location.LocationImp
+import communication.hardware.clean.device.location.mode.Accuracy
+import communication.hardware.clean.device.location.mode.mapper.AccuracyMapper
 import communication.hardware.clean.di.qualifiers.*
 import communication.hardware.clean.di.qualifiers.supported.*
 import communication.hardware.clean.domain.camera.ICamera
@@ -182,14 +183,15 @@ val locationModule = module {
             androidContext(),
             get(Interval),
             get(FastInterval),
-            get(Priority),
-            get(MinAccuracy)
+            get(),
+            get(MinAccuracy),
+            get()
         )
     }
 
     single(Interval) { (get() as TimeUnit).toMillis(1) }
     single(FastInterval) { (get() as TimeUnit).toMillis(1) }
-    single(Priority) { LocationRequest.PRIORITY_HIGH_ACCURACY }
+    single { Accuracy.PRIORITY_HIGH_ACCURACY }
     single(MinAccuracy) { 200 }
     single { TimeUnit.SECONDS }
 }
@@ -227,6 +229,7 @@ val mapperModule = module {
     single { CameraSideMapper() }
     single { UiFlashModeMapper() }
     single { FlashModeMapper() }
+    single { AccuracyMapper() }
     single { "HH:mm:ss" }
 }
 
